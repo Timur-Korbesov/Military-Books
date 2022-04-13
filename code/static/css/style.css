@@ -1,8 +1,9 @@
 .btn-input {
+    font-size: 24px;
     display: flex;
     justify-content: flex-end
 }
 .navbar-nav li {
     font-size: 24px;
-    padding-right: 80px;
+    padding-right: 130px;
 }
