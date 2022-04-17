@@ -1,11 +1,12 @@
 .btn-input {
     font-size: 24px;
-    display: flex;
-    justify-content: flex-end
 }
-.navbar-nav li {
+.nav-item:not(.btn_not) {
     font-size: 24px;
-    padding-right: 130px;
+    padding-right: 120px;
+}
+.nav-item, .btn_not {
+    padding-right: 40px;
 }
 
 footer {

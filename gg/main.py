@@ -3,13 +3,13 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from werkzeug.utils import redirect
 
 from data import db_session
-from data.employees import Employees
+from data.user import User
 from forms.user import RegisterForm, LoginForm
-# from data.jobs import Jobs
+from data.jobs import Jobs
 from forms.jobs import JobsForm
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'it-cube-ol15'
+app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -17,17 +17,16 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
-    return db_sess.query(Employees).get(user_id)
+    return db_sess.query(User).get(user_id)
 
 
 @app.route("/index")
 @app.route("/")
 def index():
     jobs = None
-    jobs = None
     db_sess = db_session.create_session()
-    # if current_user.is_authenticated:
-    #     jobs = db_sess.query(Jobs)
+    if current_user.is_authenticated:
+        jobs = db_sess.query(Jobs)
     return render_template("index.html", jobs=jobs)
 
 
@@ -43,7 +42,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        user = db_sess.query(Employees).filter(Employees.Email == form.email.data).first()
+        user = db_sess.query(User).filter(User.email == form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             return redirect("/")
@@ -62,22 +61,21 @@ def reqister():
                                    form=form,
                                    message="Пароли не совпадают")
         db_sess = db_session.create_session()
-        if db_sess.query(Employees).filter(Employees.Email == form.email.data).first():
+        if db_sess.query(User).filter(User.email == form.email.data).first():
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Такой пользователь уже есть")
-        employer = Employees(
-            FIO=form.FIO.data,
-            Email=form.email.data,
-            Date_of_birth=form.date_of_birth.data,
-            Place_of_residence=form.place_of_residence.data,
-            Number_phone=form.number_phone.data,
-            Gender=form.gender.data,
-            Status=form.status.data,
-            Note=form.note.data
+        user = User(
+            name=form.name.data,
+            email=form.email.data,
+            surname=form.surname.data,
+            age=form.age.data,
+            position=form.position.data,
+            speciality=form.speciality.data,
+            address=form.address.data
         )
-        employer.set_password(form.password.data)
-        db_sess.add(employer)
+        user.set_password(form.password.data)
+        db_sess.add(user)
         db_sess.commit()
         return redirect('/login')
     return render_template('register.html', title='Регистрация', form=form)
@@ -153,7 +151,7 @@ def add_news():
 
 
 def main():
-    db_session.global_init("db/it-cube-data.db")
+    db_session.global_init("db/mars.db")
     app.run()
 
 
