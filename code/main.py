@@ -66,6 +66,10 @@ def reqister():
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Такой пользователь уже есть")
+        if db_sess.query(Employees).filter(Employees.Number_phone == form.number_phone.data).first():
+            return render_template('register.html', title='Регистрация',
+                                   form=form,
+                                   message="Пользователь с таким номером телефона уже существует")
         employer = Employees(
             FIO=form.FIO.data,
             Email=form.email.data,

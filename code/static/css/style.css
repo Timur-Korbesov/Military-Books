@@ -1,8 +1,8 @@
 .btn-input {
-    font-size: 24px;
+    font-size: 20px;
 }
 .nav-item:not(.btn_not) {
-    font-size: 24px;
+    font-size: 20px;
     padding-right: 120px;
 }
 .nav-item, .btn_not {
@@ -11,4 +11,7 @@
 
 footer {
     background-color: #F1E3E0;
+}
+.navbar-brand {
+    padding-right: 40px;
 }
