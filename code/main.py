@@ -87,7 +87,7 @@ def reqister():
     return render_template('register.html', title='Регистрация', form=form)
 
 
-@app.route('/addjob',  methods=['GET', 'POST'])
+@app.route('/addresult',  methods=['GET', 'POST'])
 @login_required
 def add_news():
     form = JobsForm()
@@ -103,7 +103,7 @@ def add_news():
         db_sess.merge(current_user)
         db_sess.commit()
         return redirect('/')
-    return render_template('addjob.html', title='Добавление работы',
+    return render_template('addresult.html', title='Добавление результата',
                            form=form)
 
 #
