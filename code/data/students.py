@@ -13,7 +13,7 @@ class Student(SqlAlchemyBase, UserMixin, SerializerMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
     FIO = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    Date_of_birth = sqlalchemy.Column(sqlalchemy.Date, nullable=True)
+    Date_of_birth = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Class = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     Сertificate_DO = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     Place_of_residence = sqlalchemy.Column(sqlalchemy.String, nullable=True)
@@ -22,4 +22,3 @@ class Student(SqlAlchemyBase, UserMixin, SerializerMixin):
     Number_phone_parant = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Gender = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Note = sqlalchemy.Column(sqlalchemy.Text)
-

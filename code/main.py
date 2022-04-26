@@ -1,12 +1,17 @@
+from datetime import datetime
+
 from flask import Flask, render_template, make_response, session, request
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.utils import redirect
 
 from data import db_session
+from data.students import Student
 from data.employees import Employees
 from forms.user import RegisterForm, LoginForm
 # from data.jobs import Jobs
 from forms.jobs import JobsForm
+from gg.data.jobs import Jobs
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'it-cube-ol15'
@@ -106,6 +111,11 @@ def add_news():
     return render_template('addresult.html', title='Добавление результата',
                            form=form)
 
+
+@app.route('/students')
+def students():
+    return render_template('students.html')
+
 #
 # @app.route('/news/<int:id>', methods=['GET', 'POST'])
 # @login_required
@@ -156,9 +166,29 @@ def add_news():
 #     return redirect('/')
 
 
+
 def main():
     db_session.global_init("db/it-cube-data.db")
-    app.run()
+
+    user = Student()
+    user.FIO = "Корбесов Тимур Тамазиевич"
+    user.Date_of_birth = "30.04.2007"
+    user.Class = 9
+    user.Сertificate_DO = 123562137
+    user.Place_of_residence = "с.Карджин"
+    user.School = "МБОУ СОШ №2"
+    user.Number_phone_student = "89604035303"
+    user.Number_phone_parant = "89289397448"
+    user.Gender = "муж"
+    user.Note = ""
+    db_sess = db_session.create_session()
+    db_sess.add(user)
+    db_sess.commit()
+
+    db_sess = db_session.create_session()
+    for stud in db_sess.query(Student).all():
+        print(stud)
+    # app.run()
 
 
 if __name__ == '__main__':
