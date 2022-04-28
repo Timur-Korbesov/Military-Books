@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <br>
     <table border="2" align="center">
         <tr>
             <th>№</th>
@@ -15,18 +16,20 @@
             <th>Пол</th>
             <th>Примечание</th>
         </tr>
-        <tr>
-            <td>1</td>
-            <td>Корбесов Тимур Тамазиевич</td>
-            <td>30.04.2007</td>
-            <td>9</td>
-            <td>123 562 137</td>
-            <td>с.Карджин</td>
-            <td>МБОУ СОШ №2</td>
-            <td>89604035303</td>
-            <td>89289397448</td>
-            <td>муж</td>
-            <td></td>
-        </tr>
+        {% for student in all_students.keys() %}
+            <tr>
+                <td>{{ student }}</td>
+                <td>{{ all_students[student][0] }}</td>
+                <td>{{ all_students[student][1] }}</td>
+                <td>{{ all_students[student][2] }}</td>
+                <td>{{ all_students[student][3] }}</td>
+                <td>{{ all_students[student][4] }}</td>
+                <td>{{ all_students[student][5] }}</td>
+                <td>{{ all_students[student][6] }}</td>
+                <td>{{ all_students[student][7] }}</td>
+                <td>{{ all_students[student][8] }}</td>
+                <td>{{ all_students[student][9] }}</td>
+            </tr>
+        {% endfor %}
     </table>
 {% endblock %}

@@ -114,7 +114,35 @@ def add_news():
 
 @app.route('/students')
 def students():
-    return render_template('students.html')
+    # students = Student()
+    # students.FIO = "Корбесов Тимур Тамазиевич"
+    # students.FIO = "30.04.2007"
+    # students.Class = 9
+    # students.Сertificate_DO = 2115631
+    # students.Place_of_residence = "с.Карджин"
+    # students.School = "МБОУ СОШ №2"
+    # students.Number_phone_student = "89034830885"
+    # students.Number_phone_parent = "89289397448"
+    # students.Gender = "муж"
+    # students.Note = ""
+    db_sess = db_session.create_session()
+    # db_sess.add(students)
+    # db_sess.commit()
+    res_dict = {}
+
+    for stud in db_sess.query(Student).all():
+        res_dict[stud.id] = [stud.FIO, stud.Date_of_birth, stud.Class, stud.Place_of_residence,
+                             stud.School, stud.Number_phone_student, stud.Number_phone_parent,
+                             stud.Gender, stud.Note]
+    return render_template('students.html', all_students=res_dict)
+
+
+@app.route('/employees')
+def employees():
+    db_sess = db_session.create_session()
+
+
+
 
 #
 # @app.route('/news/<int:id>', methods=['GET', 'POST'])
@@ -166,29 +194,9 @@ def students():
 #     return redirect('/')
 
 
-
 def main():
     db_session.global_init("db/it-cube-data.db")
-
-    user = Student()
-    user.FIO = "Корбесов Тимур Тамазиевич"
-    user.Date_of_birth = "30.04.2007"
-    user.Class = 9
-    user.Сertificate_DO = 123562137
-    user.Place_of_residence = "с.Карджин"
-    user.School = "МБОУ СОШ №2"
-    user.Number_phone_student = "89604035303"
-    user.Number_phone_parant = "89289397448"
-    user.Gender = "муж"
-    user.Note = ""
-    db_sess = db_session.create_session()
-    db_sess.add(user)
-    db_sess.commit()
-
-    db_sess = db_session.create_session()
-    for stud in db_sess.query(Student).all():
-        print(stud)
-    # app.run()
+    app.run()
 
 
 if __name__ == '__main__':

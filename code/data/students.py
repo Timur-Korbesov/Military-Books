@@ -19,6 +19,6 @@ class Student(SqlAlchemyBase, UserMixin, SerializerMixin):
     Place_of_residence = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     School = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Number_phone_student = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    Number_phone_parant = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    Number_phone_parent = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Gender = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Note = sqlalchemy.Column(sqlalchemy.Text)
