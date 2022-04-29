@@ -1,12 +1,17 @@
+from datetime import datetime
+
 from flask import Flask, render_template, make_response, session, request
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.utils import redirect
 
 from data import db_session
+from data.students import Students
 from data.employees import Employees
 from forms.user import RegisterForm, LoginForm
 # from data.jobs import Jobs
-from forms.jobs import JobsForm
+from forms.result import ResultForm
+from gg.data.jobs import Jobs
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'it-cube-ol15'
@@ -87,24 +92,57 @@ def reqister():
     return render_template('register.html', title='Регистрация', form=form)
 
 
-@app.route('/addresult',  methods=['GET', 'POST'])
+@app.route('/results',  methods=['GET', 'POST'])
 @login_required
 def add_news():
-    form = JobsForm()
+    form = ResultForm()
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        jobs = Jobs()
-        jobs.team_leader = form.team_leader.data
-        jobs.job = form.title_of_activity.data
-        jobs.work_size = form.work_size.data
-        jobs.collaborators = form.list_of_collaborators.data
-        jobs.is_finished = form.is_finished.data
-        current_user.jobs.append(jobs)
-        db_sess.merge(current_user)
-        db_sess.commit()
-        return redirect('/')
-    return render_template('addresult.html', title='Добавление результата',
+        # db_sess = db_session.create_session()
+        # jobs = Jobs()
+        # jobs.team_leader = form.team_leader.data
+        # jobs.job = form.title_of_activity.data
+        # jobs.work_size = form.work_size.data
+        # jobs.collaborators = form.list_of_collaborators.data
+        # jobs.is_finished = form.is_finished.data
+        # current_user.jobs.append(jobs)
+        # db_sess.merge(current_user)
+        # db_sess.commit()
+        return redirect('/results')
+    return render_template('results.html', title='Добавление результата',
                            form=form)
+
+
+@app.route('/students')
+def students():
+    # students = Student()
+    # students.FIO = "Корбесов Тимур Тамазиевич"
+    # students.FIO = "30.04.2007"
+    # students.Class = 9
+    # students.Сertificate_DO = 2115631
+    # students.Place_of_residence = "с.Карджин"
+    # students.School = "МБОУ СОШ №2"
+    # students.Number_phone_student = "89034830885"
+    # students.Number_phone_parent = "89289397448"
+    # students.Gender = "муж"
+    # students.Note = ""
+    db_sess = db_session.create_session()
+    # db_sess.add(students)
+    # db_sess.commit()
+    res_dict = {}
+
+    for stud in db_sess.query(Student).all():
+        res_dict[stud.id] = [stud.FIO, stud.Date_of_birth, stud.Class, stud.Place_of_residence,
+                             stud.School, stud.Number_phone_student, stud.Number_phone_parent,
+                             stud.Gender, stud.Note]
+    return render_template('students.html', all_students=res_dict)
+
+
+@app.route('/employees')
+def employees():
+    db_sess = db_session.create_session()
+
+
+
 
 #
 # @app.route('/news/<int:id>', methods=['GET', 'POST'])

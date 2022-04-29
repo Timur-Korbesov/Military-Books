@@ -8,7 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .db_session import SqlAlchemyBase
 
 
-class StatusEmployeer(SqlAlchemyBase, UserMixin, SerializerMixin):
+class Statusemployer(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'Status_employees'
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     Role = sqlalchemy.Column(sqlalchemy.String, nullable=True)
@@ -29,8 +29,8 @@ class Employees(SqlAlchemyBase, UserMixin, SerializerMixin):
     Status = sqlalchemy.Column(sqlalchemy.String, sqlalchemy.ForeignKey("Status_employees.id"), nullable=True)
     Note = sqlalchemy.Column(sqlalchemy.Text)
 
-    studies_it_cube = orm.relation("StudiesITCube", back_populates='employeer')
-    result = orm.relation("Result", back_populates='employeer')
+    studies_it_cube = orm.relation("Studies_it_cube", back_populates='employer')
+    result = orm.relation("Result", back_populates='employer')
 
     def __repr__(self):
         return f"<User> {self.name} {self.email}"

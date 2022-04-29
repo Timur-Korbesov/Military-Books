@@ -12,8 +12,6 @@ class Status(SqlAlchemyBase, UserMixin, SerializerMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     Status_name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
-    event = orm.relation('Event')
-
 
 class Form_of_Holding(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'Form_of_holding'
@@ -35,13 +33,12 @@ class Event(SqlAlchemyBase, UserMixin, SerializerMixin):
 
     Form_of_holding = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Form_of_holding.id"), nullable=True)
     Status = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Status.id"), nullable=True)
-    Direction = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Direction.id"), nullable=True)
+    Direction = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Directions.id"), nullable=True)
 
     Age = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Class = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Note = sqlalchemy.Column(sqlalchemy.Text)
     Number_of_participants = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    studies_it_cube = orm.relation("StudiesITCube", back_populates='student')
-    direction = orm.relation('Direction')
+    direction = orm.relation('Directions')
     result = orm.relation("Result", back_populates='event')
 

@@ -7,22 +7,21 @@ from sqlalchemy_serializer import SerializerMixin
 from .db_session import SqlAlchemyBase
 
 
-class StudiesITCube(SqlAlchemyBase, UserMixin, SerializerMixin):
+class Studies_it_cube(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'Studies_it_cube'
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     Direction = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Directions.id"), nullable=True)
     Date_of_admission = sqlalchemy.Column(sqlalchemy.Date, nullable=True)
     Date_of_deductions = sqlalchemy.Column(sqlalchemy.Date, nullable=True)
     Id_student = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Students.id"), nullable=True)
-    Id_employeer = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Employees.id"), nullable=True)
+    Id_employer = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Employees.id"), nullable=True)
     Note = sqlalchemy.Column(sqlalchemy.Text)
-    student = orm.relation('Student')
-    direction = orm.relation('Direction')
-    employeer = orm.relation('Employees')
-    event = orm.relation('Event')
+    student = orm.relation('Students')
+    direction = orm.relation('Directions')
+    employer = orm.relation('Employees')
 
 
-class Student(SqlAlchemyBase, UserMixin, SerializerMixin):
+class Students(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'Students'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
@@ -37,6 +36,6 @@ class Student(SqlAlchemyBase, UserMixin, SerializerMixin):
     Number_phone_parant = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Gender = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Note = sqlalchemy.Column(sqlalchemy.Text)
-    studies_it_cube = orm.relation("StudiesITCube", back_populates='student')
+    studies_it_cube = orm.relation("Studies_it_cube", back_populates='student')
     result = orm.relation("Result", back_populates='student')
 
