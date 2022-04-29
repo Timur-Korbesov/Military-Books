@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Форма добавления результатов события</h1>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.FIO.label }}<br>
+        {{ form.FIO(class="form-control") }}<br>
+        {% for error in form.FIO.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.event.label }}<br>
+        {{ form.event(class="form-control", type="email") }}<br>
+        {% for error in form.event.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.achievement.label }}<br>
+        {{ form.achievement(class="form-control", type="password") }}<br>
+        {% for error in form.achievement.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.FIO_employer.label }}<br>
+        {{ form.FIO_employer(class="form-control", type="password") }}<br>
+        {% for error in form.FIO_employer.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.achievement_photo.label }}<br>
+        {{ form.achievement_photo(class="form-control") }}<br>
+        {% for error in form.achievement_photo.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {{message}}
+</form>
+{% endblock %}
