@@ -1,4 +1,5 @@
 from datetime import datetime
+import sqlite3
 
 from flask import Flask, render_template, make_response, session, request
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
@@ -6,9 +7,9 @@ from werkzeug.utils import redirect
 
 from data import db_session
 from data.students import Student
-from data.employees import Employees
-from forms.user import RegisterForm, LoginForm, AddStudents
-# from data.jobs import Jobs
+from data.employees import Employees, StatusEmpoyeer
+from forms.user import RegisterForm, LoginForm
+from forms.students_forms import AddStudents
 from forms.jobs import JobsForm
 from gg.data.jobs import Jobs
 
@@ -134,7 +135,7 @@ def add_student():
             FIO=form.FIO.data,
             Date_of_birth=form.date_of_birth.data,
             Class=form.date_of_birth.data,
-            Certificate_DO=form.certificate_do.data,
+            Сertificate_DO=int(form.certificate_do.data),
             Place_of_residence=form.place_of_residence.data,
             School=form.school.data,
             Number_phone_student=form.number_phone.data,
@@ -144,14 +145,19 @@ def add_student():
         )
         db_sess.add(new_student)
         db_sess.commit()
-        print("YES")
     return render_template('add_student.html', form=form)
 
 
 @app.route('/employees')
 def employees():
     db_sess = db_session.create_session()
-    pass
+    res_dict = {}
+    for empl in db_sess.query(Employees).all():
+        status = db_sess.query(StatusEmpoyeer).filter(StatusEmpoyeer.id == empl.Status).first()
+        res_dict[empl.id] = [empl.FIO, empl.Email, empl.Hashed_password, empl.Date_of_birth,
+                             empl.Place_of_residence, empl.Number_phone, empl.Gender, status.Role,
+                             empl.Note]
+    return render_template('employees.html', all_employees=res_dict)
 
 
 

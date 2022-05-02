@@ -12,7 +12,7 @@ class StatusEmpoyeer(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'Status_employees'
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     Role = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    employeer = orm.relation("Employees", back_populates='status_employeer')
+    employeer = orm.relation("Employees")
 
 
 class Employees(SqlAlchemyBase, UserMixin, SerializerMixin):

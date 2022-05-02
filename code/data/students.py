@@ -15,7 +15,7 @@ class Student(SqlAlchemyBase, UserMixin, SerializerMixin):
     FIO = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Date_of_birth = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Class = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
-    Сertificate_DO = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+    Сertificate_DO = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Place_of_residence = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     School = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Number_phone_student = sqlalchemy.Column(sqlalchemy.String, nullable=True)

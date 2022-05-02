@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <br>
+    <h3 align="center">Список сотрудников</h3>
+    <br>
+    <table border="2" align="center">
+        <tr>
+            <th>№</th>
+            <th>ФИО</th>
+            <th>Адрес электронной почты</th>
+            <th>Дата рождения</th>
+            <th>Место жительства</th>
+            <th>Номер телефона</th>
+            <th>Пол</th>
+            <th>Статус</th>
+            <th>Примечание</th>
+        </tr>
+        {% for employ in all_employees.keys() %}
+            <tr>
+                <td>{{ employ }}</td>
+                <td>{{ all_employees[employ][0] }}</td>
+                <td>{{ all_employees[employ][1] }}</td>
+                <td>{{ all_employees[employ][3] }}</td>
+                <td>{{ all_employees[employ][4] }}</td>
+                <td>{{ all_employees[employ][5] }}</td>
+                <td>{{ all_employees[employ][6] }}</td>
+                <td>{{ all_employees[employ][7] }}</td>
+                <td>{{ all_employees[employ][8] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

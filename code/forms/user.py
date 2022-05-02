@@ -28,19 +28,3 @@ class LoginForm(FlaskForm):
     email = EmailField('Адрес электронной почты')
     remember_me = BooleanField('Запомнить меня')
     submit = SubmitField('Авторизоваться')
-
-
-class AddStudents(FlaskForm):
-    FIO = StringField('ФИО', validators=[DataRequired()])
-    email = EmailField('Адрес электронной почты', validators=[DataRequired()])
-    date_of_birth = DateField('Дата рождения', validators=[DataRequired()])
-    class_number = StringField('Класс', validators=[DataRequired()])
-    certificate_do = StringField('Сертификат дополнительного образования', validators=[DataRequired()])
-    place_of_residence = StringField('Место жительства', validators=[DataRequired()])
-    school = StringField('Школа', validators=[DataRequired()])
-    number_phone = StringField('Номер телефона', validators=[DataRequired()])
-    number_phone_parent = StringField('Номер телефона родителя', validators=[DataRequired()])
-    gender = SelectField('Ваш пол', validators=[DataRequired()], coerce=str, choices=[('Мужской', 'Мужской'),
-                                                                                      ('Женский', 'Женский')])
-    note = TextAreaField('Примечание', validators=[DataRequired()])
-    submit = SubmitField('Добавить ученика')
