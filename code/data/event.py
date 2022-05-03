@@ -40,5 +40,6 @@ class Event(SqlAlchemyBase, UserMixin, SerializerMixin):
     Note = sqlalchemy.Column(sqlalchemy.Text)
     Number_of_participants = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     direction = orm.relation('Directions')
-    result = orm.relation("Result", back_populates='event')
+    Results = orm.relation("Results", back_populates='event')
+    stage_events = orm.relation("Stages_Events", back_populates='event')
 

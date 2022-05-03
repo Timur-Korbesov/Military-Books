@@ -37,5 +37,5 @@ class Students(SqlAlchemyBase, UserMixin, SerializerMixin):
     Gender = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Note = sqlalchemy.Column(sqlalchemy.Text)
     studies_it_cube = orm.relation("Studies_it_cube", back_populates='student')
-    result = orm.relation("Result", back_populates='student')
+    Results = orm.relation("Results", back_populates='student')
 

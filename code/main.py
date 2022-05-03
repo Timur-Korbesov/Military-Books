@@ -8,10 +8,8 @@ from data import db_session
 from data.students import Students
 from data.employees import Employees
 from forms.user import RegisterForm, LoginForm
-# from data.jobs import Jobs
-from forms.result import ResultForm
-from gg.data.jobs import Jobs
-
+from forms.result import ResultsForm
+from forms import result
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'it-cube-ol15'
@@ -61,7 +59,7 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def reqister():
     form = RegisterForm()
-    if form.validate_on_submit():
+    if form.submit.data:
         if form.password.data != form.password_again.data:
             return render_template('register.html', title='Регистрация',
                                    form=form,
@@ -92,10 +90,15 @@ def reqister():
     return render_template('register.html', title='Регистрация', form=form)
 
 
-@app.route('/results',  methods=['GET', 'POST'])
+@app.route('/results', methods=['GET', 'POST'])
 @login_required
-def add_news():
-    form = ResultForm()
+def results():
+    form = ResultsForm()
+    result.Results_stages_id = result.cur.execute(result.quare_stages_id, (Results_event[0][0],)).fetchall()
+    result.Results_stages = []
+    for i in result.Results_stages_id:
+        result.res_stages = result.cur.execute(result.quare_stages, (i[0],)).fetchall()
+        result.Results_stages.append(result.res_stages[0])
     if form.validate_on_submit():
         # db_sess = db_session.create_session()
         # jobs = Jobs()
@@ -140,8 +143,6 @@ def students():
 @app.route('/employees')
 def employees():
     db_sess = db_session.create_session()
-
-
 
 
 #
