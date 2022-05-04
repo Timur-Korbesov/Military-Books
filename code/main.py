@@ -6,7 +6,12 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from werkzeug.utils import redirect
 
 from data import db_session
-from data.students import Student
+from data.achievement import Achievmient
+from data.results import Results
+from data.students import Student, Studies_it_cube
+from data.direction import Directions
+from data.event import Event
+from data.stages_event import Stages_Events
 from data.employees import Employees, StatusEmpoyeer
 from forms.user import RegisterForm, LoginForm
 from forms.students_forms import AddStudents
@@ -159,6 +164,20 @@ def employees():
                              empl.Note]
     return render_template('employees.html', all_employees=res_dict)
 
+
+@app.route('/reports')
+def reports():
+    db_sess = db_session.create_session()
+
+    res_dict = {}
+    for result in db_sess.query(Studies_it_cube).all():
+        student = db_sess.query(Student).filter(Student.id == result.Id_student)
+        direction = db_sess.query(Directions).filter(Directions.id == (db_sess.query(Studies_it_cube).filter(student.id == Studies_it_cube.id_student).direction)).Direction
+        stage_event = db_sess.query(Stages_Events).filter(Stages_Events.id == result.Id_stage_event).id_event
+        event = db_sess.query(Event).filter(stage_event == Event.id).Name_of_event
+        result_of_event = db_sess.query(Achievmient).filter(Achievmient.id == result.Id_achievement).Name_of_event
+        res_dict[result.id] = [student, result.Id_employer, direction, event, result_of_event]
+    return render_template('reports.html', all_reports=res_dict)
 
 
 #

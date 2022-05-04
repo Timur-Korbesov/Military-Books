@@ -6,20 +6,26 @@ from sqlalchemy_serializer import SerializerMixin
 from .db_session import SqlAlchemyBase
 
 
-class Result(SqlAlchemyBase, UserMixin, SerializerMixin):
+class Achievement(SqlAlchemyBase, UserMixin, SerializerMixin):
+    __tablename__ = 'Achievement'
+
+    id = sqlalchemy.Column(sqlalchemy.Integer,
+                           primary_key=True, autoincrement=True)
+    Achievement = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+
+
+class Results(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'Results'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
-    team_leader = sqlalchemy.Column(sqlalchemy.Integer,
-                                    sqlalchemy.ForeignKey("employees.id"))
-    job = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    work_size = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
-    collaborators = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    start_date = sqlalchemy.Column(sqlalchemy.String)
-    end_date = sqlalchemy.Column(sqlalchemy.String)
-    is_finished = sqlalchemy.Column(sqlalchemy.String)
+    Id_event = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Event.id"), nullable=True)
+    Id_student = sqlalchemy.Column(sqlalchemy.Integer,
+                                   sqlalchemy.ForeignKey("Students.id"))
+    Id_achievement = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Achievement.id"), nullable=True)
+    Id_employer = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Stages_Events.id"), nullable=True)
+    Diploms = sqlalchemy.Column(sqlalchemy.BLOB, nullable=True)
 
-    achievmient = orm.relation("Achievmient", back_populates='achievmient')
-
-    employeer = orm.relation("Result", back_populates='result')
+    stage_events = orm.relation("Stages_Events")
+    student = orm.relation("Students")
+    event = orm.relation("Event")

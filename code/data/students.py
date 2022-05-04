@@ -7,6 +7,20 @@ from sqlalchemy_serializer import SerializerMixin
 from .db_session import SqlAlchemyBase
 
 
+class Studies_it_cube(SqlAlchemyBase, UserMixin, SerializerMixin):
+    __tablename__ = 'Studies_it_cube'
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
+    Direction = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Directions.id"), nullable=True)
+    Date_of_admission = sqlalchemy.Column(sqlalchemy.Date, nullable=True)
+    Date_of_deductions = sqlalchemy.Column(sqlalchemy.Date, nullable=True)
+    Id_student = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Students.id"), nullable=True)
+    Id_employer = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Employees.id"), nullable=True)
+    Note = sqlalchemy.Column(sqlalchemy.Text)
+    student = orm.relation('Students')
+    direction = orm.relation('Directions')
+    employer = orm.relation('Employees')
+
+
 class Student(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'Students'
 
