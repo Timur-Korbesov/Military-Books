@@ -32,6 +32,7 @@ class Employees(SqlAlchemyBase, UserMixin, SerializerMixin):
 
     studies_it_cube = orm.relation("Studies_it_cube", back_populates='employer')
     statusemployer = orm.relation("StatusEmployer")
+    results = orm.relation("Results", back_populates='employer')
 
     def __repr__(self):
         return f"<User> {self.name} {self.email}"

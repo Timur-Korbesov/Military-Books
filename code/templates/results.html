@@ -2,18 +2,8 @@
 
 {% block content %}
 <h1>Форма добавления результатов события</h1>
-<form action="" method="post">
+<form action="" method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
-    <p>
-        {{ form.event.label(class="form-label") }}<br>
-        {{ form.event(class="form-control") }}
-        {% for error in form.event.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-    <p>{{ form.submit_event(type="submit", class="btn btn-primary") }}</p>
     <p>
         {{ form.stage.label(class="form-label") }}<br>
         {{ form.stage(class="form-control") }}<br>
@@ -51,7 +41,9 @@
         {% endfor %}
     </p>
     <p>
-       ц
+        {{ form.achievement_photo.label(class="form-label") }}<br>
+        {{ form.achievement_photo(type="file") }}<br><br>
+
     </p>
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
     {{message}}

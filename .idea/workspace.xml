@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a9ac94d1-dfb0-4943-9a53-e32179cae37c" name="Default Changelist" comment="">
+    <list default="true" id="a9ac94d1-dfb0-4943-9a53-e32179cae37c" name="Default Changelist" comment="п">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/data/__all_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/data/__all_models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/data/employees.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/data/employees.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/data/event.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/data/event.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/data/results.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/data/results.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/data/students.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/data/students.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/db/it-cube-data.db" beforeDir="false" afterPath="$PROJECT_DIR$/code/db/it-cube-data.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/forms/result.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/forms/result.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/forms/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/forms/user.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/code/templates/base.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/templates/results.html" beforeDir="false" afterPath="$PROJECT_DIR$/code/templates/results.html" afterDir="false" />
@@ -44,7 +41,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="configurable.group.editor" />
   </component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -83,6 +80,14 @@
       <option name="presentableId" value="Default" />
       <updated>1651256188827</updated>
     </task>
+    <task id="LOCAL-00001" summary="п">
+      <created>1651604472563</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1651604472563</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -96,5 +101,9 @@
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="п" />
+    <option name="LAST_COMMIT_MESSAGE" value="п" />
   </component>
 </project>

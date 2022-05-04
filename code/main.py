@@ -1,20 +1,28 @@
+import os
+import sqlite3
 from datetime import datetime
 
 from flask import Flask, render_template, make_response, session, request
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from werkzeug.utils import redirect
+from werkzeug.utils import redirect, secure_filename
 
 from data import db_session
 from data.students import Students
 from data.employees import Employees
+from data.results import Results
+from data.stages_event import Stages_Events
 from forms.user import RegisterForm, LoginForm
-from forms.result import ResultsForm
+from forms.result import ResultsForm, EventForm
 from forms import result
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'it-cube-ol15'
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+# Формы для результатов
+form_event = EventForm
+results_stages = []
 
 
 @login_manager.user_loader
@@ -59,7 +67,7 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def reqister():
     form = RegisterForm()
-    if form.submit.data:
+    if form.validate_on_submit():
         if form.password.data != form.password_again.data:
             return render_template('register.html', title='Регистрация',
                                    form=form,
@@ -90,29 +98,62 @@ def reqister():
     return render_template('register.html', title='Регистрация', form=form)
 
 
+@app.route('/results_event', methods=['GET', 'POST'])
+@login_required
+def results_event():
+    global form_event, results_stages
+    form_event = EventForm()
+    print(form_event.event.data, '-----------------------------------------22----------------')
+    con = sqlite3.connect('./db/it-cube-data.db')
+    cur = con.cursor()
+    if form_event.is_submitted():
+        event_id = form_event.event.data
+        results_stages_id = cur.execute(result.quare_stages_id, (event_id,)).fetchall()
+        results_stages = []
+        for i in results_stages_id:
+            res_stages = cur.execute(result.quare_stages, (i[0],)).fetchall()
+            results_stages.append(res_stages[0])
+        return redirect('/results')
+    return render_template('results_event.html', title='Добавление результата',
+                           form=form_event)
+
+
 @app.route('/results', methods=['GET', 'POST'])
 @login_required
 def results():
-    form = ResultsForm()
-    result.Results_stages_id = result.cur.execute(result.quare_stages_id, (Results_event[0][0],)).fetchall()
-    result.Results_stages = []
-    for i in result.Results_stages_id:
-        result.res_stages = result.cur.execute(result.quare_stages, (i[0],)).fetchall()
-        result.Results_stages.append(result.res_stages[0])
-    if form.validate_on_submit():
-        # db_sess = db_session.create_session()
-        # jobs = Jobs()
-        # jobs.team_leader = form.team_leader.data
-        # jobs.job = form.title_of_activity.data
-        # jobs.work_size = form.work_size.data
-        # jobs.collaborators = form.list_of_collaborators.data
-        # jobs.is_finished = form.is_finished.data
-        # current_user.jobs.append(jobs)
-        # db_sess.merge(current_user)
-        # db_sess.commit()
+    global results_stages, form_event
+    form_result = ResultsForm()
+    form_result.stage.choices = [(stage[0], stage[1]) for stage in results_stages]
+    print('-----------------------------------------------------')
+    print(form_result.FIO.choices)
+    con = sqlite3.connect('./db/it-cube-data.db')
+    cur = con.cursor()
+    if form_result.validate_on_submit():
+        quare_stages_events = f"""
+                SELECT id FROM Stages_Events
+                WHERE id_event == ? AND id_stage == ?
+                """
+        result_stage_id = cur.execute(quare_stages_events, (form_event.event.data, form_result.stage.data)).fetchall()
+        db_sess = db_session.create_session()
+
+        f = request.files['achievement_photo']
+        path = 'static/img/' + secure_filename(f.filename)
+        f.save(path)
+        with open(path, 'rb') as file:
+            blob_data = file.read()
+        os.remove(path)
+        res = Results(
+            Id_stage_event=result_stage_id[0][0],
+            Id_student=form_result.FIO.data,
+            Id_achievement=form_result.achievement.data,
+            Id_employer=form_result.FIO_employer.data,
+            Diploms=blob_data
+        )
+        db_sess.add(res)
+        db_sess.commit()
         return redirect('/results')
     return render_template('results.html', title='Добавление результата',
-                           form=form)
+                           form=form_result)
 
 
 @app.route('/students')
