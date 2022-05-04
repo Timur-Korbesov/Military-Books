@@ -171,7 +171,8 @@ def reports():
     res_dict = {}
     for result in db_sess.query(Studies_it_cube).all():
         student = db_sess.query(Students).filter(Students.id == result.Id_student)
-        direction = db_sess.query(Directions).filter(Directions.id == (db_sess.query(Studies_it_cube).filter(student.id == Studies_it_cube.id_student).direction)).Direction
+        direction = db_sess.query(Studies_it_cube).filter(student.id == Studies_it_cube.id_student).Direction
+        direction = db_sess.query(Directions).filter(Directions.id == direction).Direction
         stage_event = db_sess.query(Stages_Events).filter(Stages_Events.id == result.Id_stage_event).id_event
         event = db_sess.query(Event).filter(stage_event == Event.id).Name_of_event
         result_of_event = db_sess.query(Achievmient).filter(Achievmient.id == result.Id_achievement).Name_of_event
