@@ -6,13 +6,12 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from werkzeug.utils import redirect
 
 from data import db_session
-from data.achievement import Achievmient
-from data.results import Results
-from data.students import Student, Studies_it_cube
+from data.results import Results, Achievement
+from data.students import Students, Studies_it_cube
 from data.direction import Directions
 from data.event import Event
 from data.stages_event import Stages_Events
-from data.employees import Employees, StatusEmpoyeer
+from data.employees import Employees, StatusEmployer
 from forms.user import RegisterForm, LoginForm
 from forms.students_forms import AddStudents
 from forms.jobs import JobsForm
@@ -123,7 +122,7 @@ def students():
     db_sess = db_session.create_session()
 
     res_dict = {}
-    for stud in db_sess.query(Student).all():
+    for stud in db_sess.query(Students).all():
         res_dict[stud.id] = [stud.FIO, stud.Date_of_birth, stud.Class, stud.Place_of_residence,
                              stud.School, stud.Number_phone_student, stud.Number_phone_parent,
                              stud.Gender, stud.Note]
@@ -136,7 +135,7 @@ def add_student():
     form = AddStudents()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
-        new_student = Student(
+        new_student = Students(
             FIO=form.FIO.data,
             Date_of_birth=form.date_of_birth.data,
             Class=form.date_of_birth.data,
@@ -158,7 +157,7 @@ def employees():
     db_sess = db_session.create_session()
     res_dict = {}
     for empl in db_sess.query(Employees).all():
-        status = db_sess.query(StatusEmpoyeer).filter(StatusEmpoyeer.id == empl.Status).first()
+        status = db_sess.query(StatusEmployer).filter(StatusEmployer.id == empl.Status).first()
         res_dict[empl.id] = [empl.FIO, empl.Email, empl.Hashed_password, empl.Date_of_birth,
                              empl.Place_of_residence, empl.Number_phone, empl.Gender, status.Role,
                              empl.Note]
@@ -171,7 +170,7 @@ def reports():
 
     res_dict = {}
     for result in db_sess.query(Studies_it_cube).all():
-        student = db_sess.query(Student).filter(Student.id == result.Id_student)
+        student = db_sess.query(Students).filter(Students.id == result.Id_student)
         direction = db_sess.query(Directions).filter(Directions.id == (db_sess.query(Studies_it_cube).filter(student.id == Studies_it_cube.id_student).direction)).Direction
         stage_event = db_sess.query(Stages_Events).filter(Stages_Events.id == result.Id_stage_event).id_event
         event = db_sess.query(Event).filter(stage_event == Event.id).Name_of_event
