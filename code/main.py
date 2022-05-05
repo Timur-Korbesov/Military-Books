@@ -169,14 +169,21 @@ def reports():
     db_sess = db_session.create_session()
 
     res_dict = {}
-    for result in db_sess.query(Studies_it_cube).all():
-        student = db_sess.query(Students).filter(Students.id == result.Id_student)
-        direction = db_sess.query(Studies_it_cube).filter(student.id == Studies_it_cube.id_student).Direction
-        direction = db_sess.query(Directions).filter(Directions.id == direction).Direction
-        stage_event = db_sess.query(Stages_Events).filter(Stages_Events.id == result.Id_stage_event).id_event
-        event = db_sess.query(Event).filter(stage_event == Event.id).Name_of_event
-        result_of_event = db_sess.query(Achievmient).filter(Achievmient.id == result.Id_achievement).Name_of_event
-        res_dict[result.id] = [student, result.Id_employer, direction, event, result_of_event]
+    for result in db_sess.query(Results).all():
+        student_info = db_sess.query(Studies_it_cube).filter(Studies_it_cube.Id_student == result.Id_student).first()
+        student = db_sess.query(Students).filter(Students.id == student_info.Id_student).first().FIO
+
+        employeer = db_sess.query(Employees).filter(Employees.id == result.Id_employer).first().FIO
+
+        direction = db_sess.query(Directions).filter(Directions.id == student_info.Direction).first().Direction
+
+        id_event = db_sess.query(Stages_Events).filter(Stages_Events.id == result.Id_stage_event).first().Id_event
+        event = db_sess.query(Event).filter(Event.id == id_event).first().Name_of_event
+
+        res = db_sess.query(Achievement).filter(Achievement.id == result.Id_achievement).first().Achievement
+
+        res_dict[result.id] = [student, employeer, direction, event, res]
+
     return render_template('reports.html', all_reports=res_dict)
 
 
