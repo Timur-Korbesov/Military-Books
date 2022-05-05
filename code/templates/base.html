@@ -41,14 +41,14 @@
                         </li>
                         {% if not current_user.is_authenticated %}
                             <li class="nav-item btn_not">
-                                <a class="btn btn-primary btn-input" href="/register">Зарегестрироваться</a>
+                                <a class="btn btn-primary btn-input btn-sm" href="/register">Зарегестрироваться</a>
                             </li>
                             <li class="nav-item btn_not">
-                                <a class="btn btn-success btn-input" href="/login">Войти</a>
+                                <a class="btn btn-success btn-input btn-sm" href="/login">Войти</a>
                             </li>
                         {% else %}
                             <li class="nav-item">
-                                <a class="btn btn-danger btn-input" href="/logout">Выйти</a>
+                                <a class="btn btn-danger btn-input btn-sm" href="/logout">Выйти</a>
                             </li>
                         {% endif %}
                     </ul>
