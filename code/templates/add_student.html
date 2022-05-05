@@ -2,29 +2,84 @@
 
 {% block content %}
     <form action="" method="post">
-        {{ form.hidden_tag() }}
+        {{ form.hidden_tag() }}<br>
         {{ form.FIO.label }}<br>
-        {{ form.FIO(class="form-control", type="name") }}
+        {{ form.FIO(class="form-control", type="name") }}<br>
+        {% for error in form.FIO.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
         {{ form.email.label }}<br>
-        {{ form.email(class="form-control", type="name") }}
+        {{ form.email(class="form-control", type="name") }}<br>
+        {% for error in form.email.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
         {{ form.date_of_birth.label }}<br>
-        {{ form.date_of_birth(class="form-control") }}
+        {{ form.date_of_birth(class="form-control") }}<br>
+        {% for error in form.date_of_birth.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
         {{ form.class_number.label }}<br>
-        {{ form.class_number(class="form-control", type="name") }}
+        {{ form.class_number(class="form-control", type="name") }}<br>
+        {% for error in form.class_number.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
         {{ form.certificate_do.label }}<br>
-        {{ form.certificate_do(class="form-control", type="name") }}
+        {{ form.certificate_do(class="form-control", type="name") }}<br>
+        {% for error in form.certificate_do.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
         {{ form.place_of_residence.label }}<br>
-        {{ form.place_of_residence(class="form-control", type="name") }}
+        {{ form.place_of_residence(class="form-control", type="name") }}<br>
+        {% for error in form.place_of_residence.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
         {{ form.school.label }}<br>
-        {{ form.school(class="form-control", type="name") }}
+        {{ form.school(class="form-control", type="name") }}<br>
+        {% for error in form.school.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
         {{ form.number_phone.label }}<br>
-        {{ form.number_phone(class="form-control", type="name") }}
+        {{ form.number_phone(class="form-control", type="name") }}<br>
+        {% for error in form.number_phone.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
         {{ form.number_phone_parent.label }}<br>
-        {{ form.number_phone_parent(class="form-control", type="name") }}
+        {{ form.number_phone_parent(class="form-control", type="name") }}<br>
+        {% for error in form.number_phone_parent.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
         {{ form.gender.label }}<br>
-        {{ form.gender(class="form-control", type="name") }}
+        {{ form.gender(class="form-control", type="name") }}<br>
+        {% for error in form.gender.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
         {{ form.note.label }}<br>
         {{ form.note(class="form-control", type="name") }}
+        {% for error in form.note.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
         <br>
         {{ form.submit(type="submit", class="btn btn-primary") }}
     </form>

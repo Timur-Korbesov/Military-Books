@@ -1,6 +1,9 @@
 .btn-input {
     font-size: 20px;
 }
+.nav-item {
+    forn-size: 16px;
+}
 .nav-item:not(.btn_not) {
     font-size: 20px;
     padding-right: 120px;

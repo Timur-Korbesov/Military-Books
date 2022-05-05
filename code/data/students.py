@@ -37,4 +37,3 @@ class Students(SqlAlchemyBase, UserMixin, SerializerMixin):
     Note = sqlalchemy.Column(sqlalchemy.Text)
     studies_it_cube = orm.relation("Studies_it_cube", back_populates='student')
     Results = orm.relation("Results", back_populates='student')
-

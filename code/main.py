@@ -289,7 +289,7 @@ def students():
 
     res_dict = {}
     for stud in db_sess.query(Students).all():
-        res_dict[stud.id] = [stud.FIO, stud.Date_of_birth, stud.Class, stud.Place_of_residence,
+        res_dict[stud.id] = [stud.FIO, stud.Date_of_birth, stud.Class, stud.Сertificate_DO, stud.Place_of_residence,
                              stud.School, stud.Number_phone_student, stud.Number_phone_parent,
                              stud.Gender, stud.Note]
     return render_template('students.html', all_students=res_dict)
