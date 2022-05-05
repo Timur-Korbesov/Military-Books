@@ -138,7 +138,7 @@ def add_student():
         new_student = Students(
             FIO=form.FIO.data,
             Date_of_birth=form.date_of_birth.data,
-            Class=form.date_of_birth.data,
+            Class=form.class_number.data,
             Сertificate_DO=int(form.certificate_do.data),
             Place_of_residence=form.place_of_residence.data,
             School=form.school.data,
