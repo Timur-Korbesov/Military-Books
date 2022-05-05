@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="662474b3-7710-4990-b553-486f3c9f6732" name="Changes" comment="ready" />
+    <list default="true" id="662474b3-7710-4990-b553-486f3c9f6732" name="Changes" comment="ready">
+      <change beforePath="$PROJECT_DIR$/code/data/__all_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/data/__all_models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/db/it-cube-data.db" beforeDir="false" afterPath="$PROJECT_DIR$/code/db/it-cube-data.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/main.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

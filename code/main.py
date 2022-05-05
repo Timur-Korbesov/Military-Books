@@ -1,8 +1,8 @@
 import os
 import sqlite3
 
-from flask import Flask, render_template, make_response, session, request
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from flask import Flask, render_template, request
+from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_restful import abort
 from werkzeug.utils import redirect, secure_filename
 
