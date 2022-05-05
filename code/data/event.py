@@ -7,6 +7,17 @@ from sqlalchemy_serializer import SerializerMixin
 from .db_session import SqlAlchemyBase
 
 
+class Participation_employees(SqlAlchemyBase, UserMixin, SerializerMixin):
+    __tablename__ = 'Participation_employees'
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
+    Id_event = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Event.id"), nullable=True)
+    Id_employer = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Employees.id"), nullable=True)
+    Note = sqlalchemy.Column(sqlalchemy.Text)
+
+    event = orm.relation('Event')
+    employer = orm.relation('Employees')
+
+
 class Status(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'Status'
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
@@ -38,7 +49,9 @@ class Event(SqlAlchemyBase, UserMixin, SerializerMixin):
     Age = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Class = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Note = sqlalchemy.Column(sqlalchemy.Text)
-    Number_of_participants = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    Number_of_participants = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+
     direction = orm.relation('Directions')
+    participation_employees = orm.relation("Participation_employees", back_populates='event')
     stage_events = orm.relation("Stages_Events", back_populates='event')
 

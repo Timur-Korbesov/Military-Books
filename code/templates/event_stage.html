@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Форма добавления этапа для события</h1>
+<form action="" method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.Event.label }}<br>
+        {{ form.Event(class="form-control") }}<br>
+        {% for error in form.Event.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.Stage.label }}<br>
+        {{ form.Stage(class="form-control") }}<br>
+        {% for error in form.Stage.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.Date_begin.label }}<br>
+        {{ form.Date_begin(class="form-control") }}<br>
+        {% for error in form.Date_begin.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.Date_end.label }}<br>
+        {{ form.Date_end(class="form-control") }}<br>
+        {% for error in form.Date_end.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {{message}}
+</form>
+{% endblock %}

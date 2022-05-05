@@ -1,5 +1,75 @@
 {% extends "base.html" %}
 
 {% block content %}
+<a href="/add_event" class="btn btn-warning add-event btn-lg" >
+    Добавить событие
+</a>
+<br>
+<a href="/add_event_stage" class="btn btn-info add-event" >
+    Добавить этап для события
+</a>
+    <br>
+<div class="table-responsive">
+    <table border="2" align="center" class="">
+        <tr>
+            <th>№</th>
+            <th>Название</th>
+            <th>Организатор</th>
+            <th>Описание</th>
+            <th>Сайт</th>
+            <th>Ссылка на положение</th>
+            <th>Ссылка на регестрацию</th>
+            <th>Форма проведения</th>
+            <th>Статус </th>
+            <th>Направление</th>
+            <th>Наставник</th>
+            <th>Возраст</th>
+            <th>Класс</th>
+            <th>Количество участников</th>
+            <th>Примечания</th>
+        </tr>
+        {% for event in events %}
+            <tr>
+                    <td>{{ event.id }}</td>
+                <td><a href="event/{{ event.id }}">{{ event.Name_of_event }}</a></td>
+                    <td>{{ event.Organizer }}</td>
+                    <td>{{ event.Description }}</td>
+                    <td><a href="{{ event.Website }}" target="_blank">{{ event.Website }}</a></td>
+                    <td><a href="{{ event.Link_to_position }}" target="_blank">положение</a></td>
+                    <td><a href="{{ event.Link_to_regestration }}" target="_blank">регестрация</a></td>
 
+                    {% for form_hold in form_of_hold %}
+                        {% if form_hold.id == event.Form_of_holding %}
+                            <td class="form_of_holding">{{ form_hold.Form }}</td>
+                        {% endif %}
+                    {% endfor %}
+                    {% for stat in status %}
+                        {% if stat.id == event.Status %}
+                            <td>{{ stat.Status_name }}</td>
+                        {% endif %}
+                    {% endfor %}
+                    {% for direction in direct %}
+                        {% if direction.id == event.Direction %}
+                            <td>{{ direction.Direction }}</td>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% for empl_partic in empls_partic %}
+                        {% if empl_partic.Id_event == event.id %}
+                            {% for empl in empls %}
+                                {% if empl.id == empl_partic.Id_employer %}
+                                    <td>{{ empl.FIO }}</td>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+
+                    <td>{{ event.Age }}</td>
+                    <td>{{ event.Class }}</td>
+                    <td>{{ event.Number_of_participants }}</td>
+                    <td>{{ event.Note }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
 {% endblock %}

@@ -1,19 +1,23 @@
 import os
 import sqlite3
-from datetime import datetime
 
 from flask import Flask, render_template, make_response, session, request
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from flask_restful import abort
 from werkzeug.utils import redirect, secure_filename
 
 from data import db_session
-from data.students import Students
-from data.employees import Employees
-from data.results import Results
-from data.stages_event import Stages_Events
+from data.students import Students, Studies_it_cube
+from data.employees import Employees, StatusEmployer
+from data.results import Results, Achievement
+from data.event import Event, Participation_employees, Form_of_Holding, Status
+from data.direction import Directions
+from data.stages_event import Stages_Events, Stages
 from forms.user import RegisterForm, LoginForm
 from forms.result import ResultsForm, EventForm
+from forms.event import AddEventForm, AddStageForm
 from forms import result
+from forms.students_forms import AddStudents
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'it-cube-ol15'
@@ -34,12 +38,138 @@ def load_user(user_id):
 @app.route("/index")
 @app.route("/")
 def index():
-    jobs = None
-    jobs = None
     db_sess = db_session.create_session()
-    # if current_user.is_authenticated:
-    #     jobs = db_sess.query(Jobs)
-    return render_template("index.html", jobs=jobs)
+    events = db_sess.query(Event).all()
+    empls_partic = db_sess.query(Participation_employees).all()
+    empls = db_sess.query(Employees).all()
+    status = db_sess.query(Status).all()
+    form_of_hold = db_sess.query(Form_of_Holding).all()
+    direct = db_sess.query(Directions).all()
+    return render_template("index.html", events=events, empls_partic=empls_partic, status=status,
+                           form_of_hold=form_of_hold,
+                           direct=direct, empls=empls)
+
+
+@app.route('/add_event', methods=['GET', 'POST'])
+@login_required
+def add_event():
+    form = AddEventForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        event = Event(
+            Name_of_event=form.Name_of_event.data,
+            Organizer=form.Organizer.data,
+            Description=form.Description.data,
+            Website=form.Website.data,
+            Link_to_position=form.Link_to_position.data,
+            Link_to_regestration=form.Link_to_regestration.data,
+            Form_of_holding=form.Form_of_holding.data,
+            Status=form.Status.data,
+            Direction=form.Direction.data,
+            Age=form.Age.data,
+            Class=form.Class.data,
+            Note=form.Note.data,
+            Number_of_participants=form.Number_of_participants.data
+        )
+        db_sess.add(event)
+        db_sess.commit()
+
+        event_id = db_sess.query(Event).all()[-1]
+        partic_empl = Participation_employees(
+            Id_event=event_id.id,
+            Id_emloyer=form.Employer.data,
+            Note=None
+        )
+        db_sess.add(partic_empl)
+        db_sess.commit()
+        return redirect('/add_event_stage')
+    return render_template('event.html', title='Добавление события',
+                           form=form)
+
+
+@app.route('/add_event_stage', methods=['GET', 'POST'])
+@login_required
+def add_event_stage():
+    form = AddStageForm()
+    con = sqlite3.connect('./db/it-cube-data.db')
+    cur = con.cursor()
+    quare_event = f"""
+            SELECT id, Name_of_event FROM Event  
+            """
+    form.Event.choices = [(ev[0], ev[1]) for ev in cur.execute(quare_event).fetchall()]
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        stage = Stages(
+            Stage=form.Stage.data,
+            Date_begin=form.Date_begin.data,
+            Date_end=form.Date_end.data
+        )
+        db_sess.add(stage)
+        db_sess.commit()
+        stage_id = db_sess.query(Stages).all()[-1]
+        stage_event = Stages_Events(
+            Id_event=form.Event.data,
+            Id_stage=stage_id.id
+        )
+        db_sess.add(stage_event)
+        db_sess.commit()
+        return redirect('/add_event_stage')
+    return render_template('event_stage.html', title='Добавление этапа',
+                           form=form)
+
+
+@app.route("/event/<int:id>", methods=['GET', 'POST'])
+@login_required
+def event(id):
+    form = AddEventForm()
+    if request.method == "GET":
+        db_sess = db_session.create_session()
+        event = db_sess.query(Event).filter(Event.id == id).first()
+        employer_id = db_sess.query(Participation_employees).filter(
+            Participation_employees.Id_event == event.id).first().Id_employer
+        employer = db_sess.query(Employees).filter(Employees.id == employer_id).first()
+        if event:
+            form.Name_of_event.data = event.Name_of_event
+            form.Organizer.data = event.Organizer
+            form.Description.data = event.Description
+            form.Website.data = event.Website
+            form.Link_to_position.data = event.Link_to_position
+            form.Link_to_regestration.data = event.Link_to_regestration
+            form.Form_of_holding.data = event.Form_of_holding
+            form.Status.data = event.Status
+            form.Direction.data = event.Direction
+            form.Employer.data = employer.FIO
+            form.Age.data = event.Age
+            form.Class.data = event.Class
+            form.Note.data = event.Note
+            form.Number_of_participants.data = event.Number_of_participants
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        event = db_sess.query(Event).filter(Event.id == id).first()
+        if event:
+            event.Name_of_event = form.Name_of_event.data,
+            event.Organizer = form.Organizer.data,
+            event.Description = form.Description.data,
+            event.Website = form.Website.data,
+            event.Link_to_position = form.Link_to_position.data,
+            event.Link_to_regestration = form.Link_to_regestration.data,
+            event.Form_of_holding = form.Form_of_holding.data,
+            event.Status = form.Status.data,
+            event.Direction = form.Direction.data,
+            event.Age = form.Age.data,
+            event.Class = form.Class.data,
+            event.Note = form.Note.data,
+            event.Number_of_participants = form.Number_of_participants.data
+            db_sess.commit()
+            return redirect('/')
+        else:
+            abort(404)
+    return render_template('event.html',
+                           title='Редактирование события',
+                           form=form
+                           )
 
 
 @app.route('/logout')
@@ -103,7 +233,6 @@ def reqister():
 def results_event():
     global form_event, results_stages
     form_event = EventForm()
-    print(form_event.event.data, '-----------------------------------------22----------------')
     con = sqlite3.connect('./db/it-cube-data.db')
     cur = con.cursor()
     if form_event.is_submitted():
@@ -124,8 +253,6 @@ def results():
     global results_stages, form_event
     form_result = ResultsForm()
     form_result.stage.choices = [(stage[0], stage[1]) for stage in results_stages]
-    print('-----------------------------------------------------')
-    print(form_result.FIO.choices)
     con = sqlite3.connect('./db/it-cube-data.db')
     cur = con.cursor()
     if form_result.validate_on_submit():
@@ -158,82 +285,74 @@ def results():
 
 @app.route('/students')
 def students():
-    # students = Student()
-    # students.FIO = "Корбесов Тимур Тамазиевич"
-    # students.FIO = "30.04.2007"
-    # students.Class = 9
-    # students.Сertificate_DO = 2115631
-    # students.Place_of_residence = "с.Карджин"
-    # students.School = "МБОУ СОШ №2"
-    # students.Number_phone_student = "89034830885"
-    # students.Number_phone_parent = "89289397448"
-    # students.Gender = "муж"
-    # students.Note = ""
     db_sess = db_session.create_session()
-    # db_sess.add(students)
-    # db_sess.commit()
-    res_dict = {}
 
-    for stud in db_sess.query(Student).all():
+    res_dict = {}
+    for stud in db_sess.query(Students).all():
         res_dict[stud.id] = [stud.FIO, stud.Date_of_birth, stud.Class, stud.Place_of_residence,
                              stud.School, stud.Number_phone_student, stud.Number_phone_parent,
                              stud.Gender, stud.Note]
     return render_template('students.html', all_students=res_dict)
 
 
+@app.route('/add_student', methods=['GET', 'POST'])
+@login_required
+def add_student():
+    form = AddStudents()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        new_student = Students(
+            FIO=form.FIO.data,
+            Date_of_birth=form.date_of_birth.data,
+            Class=form.class_number.data,
+            Сertificate_DO=int(form.certificate_do.data),
+            Place_of_residence=form.place_of_residence.data,
+            School=form.school.data,
+            Number_phone_student=form.number_phone.data,
+            Number_phone_parent=form.number_phone_parent.data,
+            Gender=form.gender.data,
+            Note=form.note.data
+        )
+        if not db_sess.query(Students).filter(Students.Number_phone_student == form.number_phone.data).first():
+            db_sess.add(new_student)
+            db_sess.commit()
+        redirect('/add_student')
+    return render_template('add_student.html', form=form)
+
+
 @app.route('/employees')
 def employees():
     db_sess = db_session.create_session()
+    res_dict = {}
+    for empl in db_sess.query(Employees).all():
+        status = db_sess.query(StatusEmployer).filter(StatusEmployer.id == empl.Status).first()
+        res_dict[empl.id] = [empl.FIO, empl.Email, empl.Hashed_password, empl.Date_of_birth,
+                             empl.Place_of_residence, empl.Number_phone, empl.Gender, status.Role,
+                             empl.Note]
+    return render_template('employees.html', all_employees=res_dict)
 
 
-#
-# @app.route('/news/<int:id>', methods=['GET', 'POST'])
-# @login_required
-# def edit_news(id):
-#     form = NewsForm()
-#     if request.method == "GET":
-#         db_sess = db_session.create_session()
-#         news = db_sess.query(News).filter(News.id == id,
-#                                           News.user == current_user
-#                                           ).first()
-#         if news:
-#             form.title.data = news.title
-#             form.content.data = news.content
-#             form.is_private.data = news.is_private
-#         else:
-#             abort(404)
-#     if form.validate_on_submit():
-#         db_sess = db_session.create_session()
-#         news = db_sess.query(News).filter(News.id == id,
-#                                           News.user == current_user
-#                                           ).first()
-#         if news:
-#             news.title = form.title.data
-#             news.content = form.content.data
-#             news.is_private = form.is_private.data
-#             db_sess.commit()
-#             return redirect('/')
-#         else:
-#             abort(404)
-#     return render_template('news.html',
-#                            title='Редактирование новости',
-#                            form=form
-#                            )
-#
-#
-# @app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
-# @login_required
-# def news_delete(id):
-#     db_sess = db_session.create_session()
-#     news = db_sess.query(News).filter(News.id == id,
-#                                       News.user == current_user
-#                                       ).first()
-#     if news:
-#         db_sess.delete(news)
-#         db_sess.commit()
-#     else:
-#         abort(404)
-#     return redirect('/')
+@app.route('/reports')
+def reports():
+    db_sess = db_session.create_session()
+
+    res_dict = {}
+    for resul in db_sess.query(Results).all():
+        student_info = db_sess.query(Studies_it_cube).filter(Studies_it_cube.Id_student == resul.Id_student).first()
+        student = db_sess.query(Students).filter(Students.id == student_info.Id_student).first().FIO
+
+        employeer = db_sess.query(Employees).filter(Employees.id == resul.Id_employer).first().FIO
+
+        direction = db_sess.query(Directions).filter(Directions.id == student_info.Direction).first().Direction
+
+        id_event = db_sess.query(Stages_Events).filter(Stages_Events.id == resul.Id_stage_event).first().Id_event
+        event = db_sess.query(Event).filter(Event.id == id_event).first().Name_of_event
+
+        res = db_sess.query(Achievement).filter(Achievement.id == resul.Id_achievement).first().Achievement
+
+        res_dict[resul.id] = [student, employeer, direction, event, res]
+
+    return render_template('reports.html', all_reports=res_dict)
 
 
 def main():

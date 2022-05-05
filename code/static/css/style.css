@@ -8,10 +8,22 @@
 .nav-item, .btn_not {
     padding-right: 40px;
 }
-
+main {
+    margin-top: 60px;
+}
 footer {
-    background-color: #F1E3E0;
+    background-color: #b5b5b5;
 }
 .navbar-brand {
     padding-right: 40px;
+}
+.form_of_holding {
+    margin-right: 10px;
+}
+.add-event {
+    display: flex;
+    justify-content: center;
+}
+.align_center {
+    text-align: center;
 }

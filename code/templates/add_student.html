@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        {{ form.FIO.label }}<br>
+        {{ form.FIO(class="form-control", type="name") }}
+        {{ form.email.label }}<br>
+        {{ form.email(class="form-control", type="name") }}
+        {{ form.date_of_birth.label }}<br>
+        {{ form.date_of_birth(class="form-control") }}
+        {{ form.class_number.label }}<br>
+        {{ form.class_number(class="form-control", type="name") }}
+        {{ form.certificate_do.label }}<br>
+        {{ form.certificate_do(class="form-control", type="name") }}
+        {{ form.place_of_residence.label }}<br>
+        {{ form.place_of_residence(class="form-control", type="name") }}
+        {{ form.school.label }}<br>
+        {{ form.school(class="form-control", type="name") }}
+        {{ form.number_phone.label }}<br>
+        {{ form.number_phone(class="form-control", type="name") }}
+        {{ form.number_phone_parent.label }}<br>
+        {{ form.number_phone_parent(class="form-control", type="name") }}
+        {{ form.gender.label }}<br>
+        {{ form.gender(class="form-control", type="name") }}
+        {{ form.note.label }}<br>
+        {{ form.note(class="form-control", type="name") }}
+        <br>
+        {{ form.submit(type="submit", class="btn btn-primary") }}
+    </form>
+{% endblock %}

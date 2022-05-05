@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <br>
+    <h3 align="center">Список отчётов</h3>
+    <br>
+    <table border="2" align="center">
+        <tr>
+            <th>№</th>
+            <th>Ученик</th>
+            <th>Наставник</th>
+            <th>Направление</th>
+            <th>Мероприятие</th>
+            <th>Результат</th>
+        </tr>
+        {% for report in all_reports.keys() %}
+            <tr>
+                <td>{{ report }}</td>
+                <td>{{ all_reports[report][0] }}</td>
+                <td>{{ all_reports[report][1] }}</td>
+                <td>{{ all_reports[report][2] }}</td>
+                <td>{{ all_reports[report][3] }}</td>
+                <td>{{ all_reports[report][4] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
