@@ -1,0 +1,6 @@
+SQLAlchemy~=1.4.36
+Werkzeug~=2.1.1
+WTForms~=3.0.1
+Flask~=2.1.1
+sqlalchemy_serializer
+flask_login
