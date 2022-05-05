@@ -35,8 +35,8 @@
                     <td>{{ event.Organizer }}</td>
                     <td>{{ event.Description }}</td>
                     <td><a href="{{ event.Website }}" target="_blank">{{ event.Website }}</a></td>
-                    <td><a href="{{ event.Link_to_position }}" target="_blank">положение</a></td>
-                    <td><a href="{{ event.Link_to_regestration }}" target="_blank">регестрация</a></td>
+                    <td><a href="{{ event.Link_to_position }}" target="_blank">Положение</a></td>
+                    <td><a href="{{ event.Link_to_regestration }}" target="_blank">Регистрация</a></td>
 
                     {% for form_hold in form_of_hold %}
                         {% if form_hold.id == event.Form_of_holding %}
