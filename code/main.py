@@ -147,8 +147,9 @@ def add_student():
             Gender=form.gender.data,
             Note=form.note.data
         )
-        db_sess.add(new_student)
-        db_sess.commit()
+        if not db_sess.query(Students).filter(Students.Number_phone_student == form.number_phone.data).first():
+            db_sess.add(new_student)
+            db_sess.commit()
     return render_template('add_student.html', form=form)
 
 
