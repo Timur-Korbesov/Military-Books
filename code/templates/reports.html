@@ -11,6 +11,8 @@
             <th>Наставник</th>
             <th>Направление</th>
             <th>Мероприятие</th>
+            <th>Статус</th>
+            <th>Дата</th>
             <th>Результат</th>
         </tr>
         {% for report in all_reports.keys() %}
@@ -21,6 +23,8 @@
                 <td>{{ all_reports[report][2] }}</td>
                 <td>{{ all_reports[report][3] }}</td>
                 <td>{{ all_reports[report][4] }}</td>
+                <td>{{ all_reports[report][5] }}</td>
+                <td>{{ all_reports[report][6] }}</td>
             </tr>
         {% endfor %}
     </table>

@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import pandas as pd
 
 from flask import Flask, render_template, request
 from flask_login import LoginManager, login_user, login_required, logout_user
@@ -337,22 +338,81 @@ def reports():
     db_sess = db_session.create_session()
 
     res_dict = {}
-    for resul in db_sess.query(Results).all():
-        student_info = db_sess.query(Studies_it_cube).filter(Studies_it_cube.Id_student == resul.Id_student).first()
+    for result in db_sess.query(Results).all():
+        student_info = db_sess.query(Studies_it_cube).filter(Studies_it_cube.Id_student == result.Id_student).first()
         student = db_sess.query(Students).filter(Students.id == student_info.Id_student).first().FIO
 
-        employeer = db_sess.query(Employees).filter(Employees.id == resul.Id_employer).first().FIO
+        employeer = db_sess.query(Employees).filter(Employees.id == result.Id_employer).first().FIO
 
         direction = db_sess.query(Directions).filter(Directions.id == student_info.Direction).first().Direction
 
-        id_event = db_sess.query(Stages_Events).filter(Stages_Events.id == resul.Id_stage_event).first().Id_event
+        id_event = db_sess.query(Stages_Events).filter(Stages_Events.id == result.Id_stage_event).first().Id_event
         event = db_sess.query(Event).filter(Event.id == id_event).first().Name_of_event
 
-        res = db_sess.query(Achievement).filter(Achievement.id == resul.Id_achievement).first().Achievement
+        id_stage = db_sess.query(Stages_Events).filter(Stages_Events.Id_event == id_event).first().Id_stage
+        date = db_sess.query(Stages).filter(Stages.id == id_stage).first().Date_end
 
-        res_dict[resul.id] = [student, employeer, direction, event, res]
+        status_id = db_sess.query(Event).filter(Event.id == id_event).first().Status
+        status = db_sess.query(Status).filter(Status.id == status_id).first().Status_name
+
+        res = db_sess.query(Achievement).filter(Achievement.id == result.Id_achievement).first().Achievement
+
+        res_dict[result.id] = [student, employeer, direction, event, status, date, res]
 
     return render_template('reports.html', all_reports=res_dict)
+
+
+@app.route('/export')
+def export():
+    list1 = []
+    list2 = []
+    list3 = []
+    list4 = []
+    list5 = []
+    list6 = []
+    list7 = []
+    list8 = []
+    list9 = []
+    list10 = []
+    list11 = []
+
+    col1 = "№"
+    col2 = "ФИО"
+    col3 = "Дата рождения"
+    col4 = "Класс"
+    col5 = "Сертификат ДО"
+    col6 = "Место жительства"
+    col7 = "Школа"
+    col8 = "Номер телефона"
+    col9 = "Номер телефона родителя"
+    col10 = "Пол"
+    col11 = "Примечание"
+
+    db_sess = db_session.create_session()
+
+    res_dict = {}
+    for stud in db_sess.query(Students).all():
+        res_dict[stud.id] = [stud.FIO, stud.Date_of_birth, stud.Class, stud.Сertificate_DO, stud.Place_of_residence,
+                             stud.School, stud.Number_phone_student, stud.Number_phone_parent,
+                             stud.Gender, stud.Note]
+
+        list1.append(stud.id)
+        list2.append(stud.FIO)
+        list3.append(stud.Date_of_birth)
+        list4.append(stud.Class)
+        list5.append(stud.Сertificate_DO)
+        list6.append(stud.Place_of_residence)
+        list7.append(stud.School)
+        list8.append(stud.Number_phone_student)
+        list9.append(stud.Number_phone_parent)
+        list10.append(stud.Gender)
+        list11.append(stud.Note)
+
+    data = pd.DataFrame({col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8, col9: list9, col10: list10, col11: list11})
+
+    data.to_excel('sample_data.xlsx', sheet_name='sheet1', index=False)
+
+    return render_template('students.html', all_students=res_dict)
 
 
 def main():
