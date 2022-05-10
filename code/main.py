@@ -362,8 +362,8 @@ def reports():
     return render_template('reports.html', all_reports=res_dict)
 
 
-@app.route('/export')
-def export():
+@app.route('/export_students')
+def export_students():
     list1 = []
     list2 = []
     list3 = []
@@ -410,9 +410,113 @@ def export():
 
     data = pd.DataFrame({col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8, col9: list9, col10: list10, col11: list11})
 
-    data.to_excel('sample_data.xlsx', sheet_name='sheet1', index=False)
+    data.to_excel('students.xlsx', sheet_name='sheet1', index=False)
 
     return render_template('students.html', all_students=res_dict)
+
+
+@app.route('/export_employees')
+def export_employees():
+    list1 = []
+    list2 = []
+    list3 = []
+    list4 = []
+    list5 = []
+    list6 = []
+    list7 = []
+    list8 = []
+
+    col1 = "№"
+    col2 = "ФИО"
+    col3 = "Дата рождения"
+    col4 = "Место жительства"
+    col5 = "Номер телефона"
+    col6 = "Пол"
+    col7 = "Статус"
+    col8 = "Примечание"
+
+    db_sess = db_session.create_session()
+    res_dict = {}
+    for empl in db_sess.query(Employees).all():
+        status = db_sess.query(StatusEmployer).filter(StatusEmployer.id == empl.Status).first()
+        res_dict[empl.id] = [empl.FIO, empl.Email, empl.Hashed_password, empl.Date_of_birth,
+                             empl.Place_of_residence, empl.Number_phone, empl.Gender, status.Role,
+                             empl.Note]
+
+        list1.append(empl.id)
+        list2.append(empl.FIO)
+        list3.append(empl.Date_of_birth)
+        list4.append(empl.Place_of_residence)
+        list5.append(empl.Number_phone)
+        list6.append(empl.Gender)
+        list7.append(status.Role)
+        list8.append(empl.Note)
+
+    data = pd.DataFrame({col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8})
+
+    data.to_excel('employees.xlsx', sheet_name='sheet1', index=False)
+
+    return render_template('employees.html', all_employees=res_dict)
+
+
+@app.route('/export_reports')
+def export_reports():
+    list1 = []
+    list2 = []
+    list3 = []
+    list4 = []
+    list5 = []
+    list6 = []
+    list7 = []
+    list8 = []
+
+    col1 = "№"
+    col2 = "Ученик"
+    col3 = "Наставник"
+    col4 = "Направление"
+    col5 = "Мероприятие"
+    col6 = "Статус"
+    col7 = "Дата"
+    col8 = "Результат"
+
+    db_sess = db_session.create_session()
+    res_dict = {}
+    for result in db_sess.query(Results).all():
+        student_info = db_sess.query(Studies_it_cube).filter(Studies_it_cube.Id_student == result.Id_student).first()
+        student = db_sess.query(Students).filter(Students.id == student_info.Id_student).first().FIO
+
+        employeer = db_sess.query(Employees).filter(Employees.id == result.Id_employer).first().FIO
+
+        direction = db_sess.query(Directions).filter(Directions.id == student_info.Direction).first().Direction
+
+        id_event = db_sess.query(Stages_Events).filter(Stages_Events.id == result.Id_stage_event).first().Id_event
+        event = db_sess.query(Event).filter(Event.id == id_event).first().Name_of_event
+
+        id_stage = db_sess.query(Stages_Events).filter(Stages_Events.Id_event == id_event).first().Id_stage
+        date = db_sess.query(Stages).filter(Stages.id == id_stage).first().Date_end
+
+        status_id = db_sess.query(Event).filter(Event.id == id_event).first().Status
+        status = db_sess.query(Status).filter(Status.id == status_id).first().Status_name
+
+        res = db_sess.query(Achievement).filter(Achievement.id == result.Id_achievement).first().Achievement
+
+
+        res_dict[result.id] = [student, employeer, direction, event, status, date, res]
+
+        list1.append(result.id)
+        list2.append(student)
+        list3.append(employeer)
+        list4.append(direction)
+        list5.append(event)
+        list6.append(status)
+        list7.append(date)
+        list8.append(res)
+
+    data = pd.DataFrame({col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8})
+
+    data.to_excel('reports.xlsx', sheet_name='sheet1', index=False)
+
+    return render_template('reports.html', all_reports=res_dict)
 
 
 def main():
