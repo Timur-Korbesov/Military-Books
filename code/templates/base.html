@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -7,15 +7,15 @@
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
           crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="static/css/style.css"/>
-    <link rel="shortcust icon" href="static/img/logo_short.jpg">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css')}}"/>
+    <link rel="shortcust icon"  href="{{url_for('static', filename='img/logo_short.jpg')}}">
     <title>{{title}}</title>
 </head>
 <body>
 <header>
     <nav class="navbar sticky-top navbar-expand-md navbar-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/"><img src="static/img/logo.jpg" alt="логотип" class="img-fluid"></a>
+            <a class="navbar-brand" href="/"><img src="{{url_for('static', filename='img/logo.jpg')}}" alt="логотип" class="img-fluid"></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent"

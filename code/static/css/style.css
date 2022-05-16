@@ -27,3 +27,23 @@ footer {
 .align_center {
     text-align: center;
 }
+.text-event {
+    font-size: 20px;
+    margin-left: 40px;
+    margin-top: 50px;
+    line-height: 2;
+    padding-right: 140px;
+}
+.table-responsive-stages {
+    font-size: 20px;
+    margin-left: 40px;
+    margin-top: 30px;
+    padding-right: 140px;
+    padding-bottom: 30px;
+}
+.add-stage {
+    display: flex;
+    justify-content: center;
+    margin-left: 40px;
+    margin-right: 100px;
+}

@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import pandas as pd
 
 from flask import Flask, render_template, request
 from flask_login import LoginManager, login_user, login_required, logout_user
@@ -45,9 +46,33 @@ def index():
     status = db_sess.query(Status).all()
     form_of_hold = db_sess.query(Form_of_Holding).all()
     direct = db_sess.query(Directions).all()
-    return render_template("index.html", events=events, empls_partic=empls_partic, status=status,
+    return render_template("index.html", events=events, status=status,
                            form_of_hold=form_of_hold,
-                           direct=direct, empls=empls)
+                           direct=direct)
+
+
+@app.route("/event_more/<int:id>")
+@login_required
+def event_more(id):
+    db_sess = db_session.create_session()
+    event = db_sess.query(Event).filter(Event.id == id).first()
+    empls_partic = db_sess.query(Participation_employees).filter(event.id == Participation_employees.Id_event).all()
+    employes = []
+    for empl in empls_partic:
+        empls = db_sess.query(Employees).filter(Employees.id == empl.Id_employer).first()
+        employes.append(empls.FIO)
+    status = db_sess.query(Status).filter(event.Status == Status.id).first()
+    form_hold = db_sess.query(Form_of_Holding).filter(event.Form_of_holding == Form_of_Holding.id).first()
+    direction = db_sess.query(Directions).filter(event.Direction == Directions.id).first()
+    stages_id = db_sess.query(Stages_Events).filter(event.id == Stages_Events.Id_event).all()
+    stages = []
+    for stage_id in stages_id:
+        stage = db_sess.query(Stages).filter(stage_id.Id_stage == Stages.id).first()
+        stages.append(stage)
+    return render_template('event_more.html', title='Подробности события',
+                           event=event, empl_partic=empls_partic, status=status,
+                           form_hold=form_hold, direction=direction, employees=employes,
+                           stages=stages)
 
 
 @app.route('/add_event', methods=['GET', 'POST'])
@@ -77,28 +102,23 @@ def add_event():
         event_id = db_sess.query(Event).all()[-1]
         partic_empl = Participation_employees(
             Id_event=event_id.id,
-            Id_emloyer=form.Employer.data,
+            Id_employer=form.Employer.data,
             Note=None
         )
         db_sess.add(partic_empl)
         db_sess.commit()
-        return redirect('/add_event_stage')
+        return redirect('/')
     return render_template('event.html', title='Добавление события',
                            form=form)
 
 
-@app.route('/add_event_stage', methods=['GET', 'POST'])
+@app.route('/add_event_stage/<int:id>', methods=['GET', 'POST'])
 @login_required
-def add_event_stage():
+def add_event_stage(id):
     form = AddStageForm()
-    con = sqlite3.connect('./db/it-cube-data.db')
-    cur = con.cursor()
-    quare_event = f"""
-            SELECT id, Name_of_event FROM Event  
-            """
-    form.Event.choices = [(ev[0], ev[1]) for ev in cur.execute(quare_event).fetchall()]
+    db_sess = db_session.create_session()
+    event = db_sess.query(Event).filter(Event.id == id).first()
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
         stage = Stages(
             Stage=form.Stage.data,
             Date_begin=form.Date_begin.data,
@@ -108,14 +128,46 @@ def add_event_stage():
         db_sess.commit()
         stage_id = db_sess.query(Stages).all()[-1]
         stage_event = Stages_Events(
-            Id_event=form.Event.data,
+            Id_event=id,
             Id_stage=stage_id.id
         )
         db_sess.add(stage_event)
         db_sess.commit()
-        return redirect('/add_event_stage')
-    return render_template('event_stage.html', title='Добавление этапа',
-                           form=form)
+        return redirect(f'/event_more/{id}')
+    return render_template('event_stage.html', title='Добавление этапа', event=event,
+                           form=form, edit_or_add='добавления')
+
+
+@app.route("/stage/<int:id>", methods=['GET', 'POST'])
+@login_required
+def stage(id):
+    form = AddStageForm()
+    db_sess = db_session.create_session()
+    event_id = db_sess.query(Stages_Events).filter(Stages_Events.Id_stage == id).first().Id_event
+    event = db_sess.query(Event).filter(Event.id == event_id).first()
+    if request.method == "GET":
+        stage = db_sess.query(Stages).filter(Stages.id == id).first()
+        if stage:
+            form.Stage.data = stage.Stage
+            form.Date_begin.data = stage.Date_begin
+            form.Date_end.data = stage.Date_end
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        stage = db_sess.query(Stages).filter(Stages.id == id).first()
+        if stage:
+            stage.Stage = form.Stage.data
+            stage.Date_begin = form.Date_begin.data
+            stage.Date_end = form.Date_end.data
+            db_sess.commit()
+            return redirect(f'/event_more/{event.id}')
+        else:
+            abort(404)
+    return render_template('event_stage.html',
+                           title='Редактирование этапа', event=event,
+                           form=form, edit_or_add='редактирования'
+                           )
 
 
 @app.route("/event/<int:id>", methods=['GET', 'POST'])
@@ -149,21 +201,21 @@ def event(id):
         db_sess = db_session.create_session()
         event = db_sess.query(Event).filter(Event.id == id).first()
         if event:
-            event.Name_of_event = form.Name_of_event.data,
-            event.Organizer = form.Organizer.data,
-            event.Description = form.Description.data,
-            event.Website = form.Website.data,
-            event.Link_to_position = form.Link_to_position.data,
-            event.Link_to_regestration = form.Link_to_regestration.data,
-            event.Form_of_holding = form.Form_of_holding.data,
-            event.Status = form.Status.data,
-            event.Direction = form.Direction.data,
-            event.Age = form.Age.data,
-            event.Class = form.Class.data,
-            event.Note = form.Note.data,
+            event.Name_of_event = form.Name_of_event.data
+            event.Organizer = form.Organizer.data
+            event.Description = form.Description.data
+            event.Website = form.Website.data
+            event.Link_to_position = form.Link_to_position.data
+            event.Link_to_regestration = form.Link_to_regestration.data
+            event.Form_of_holding = form.Form_of_holding.data
+            event.Status = form.Status.data
+            event.Direction = form.Direction.data
+            event.Age = form.Age.data
+            event.Class = form.Class.data
+            event.Note = form.Note.data
             event.Number_of_participants = form.Number_of_participants.data
             db_sess.commit()
-            return redirect('/')
+            return redirect(f'/event_more/{event.id}')
         else:
             abort(404)
     return render_template('event.html',
@@ -337,20 +389,183 @@ def reports():
     db_sess = db_session.create_session()
 
     res_dict = {}
-    for resul in db_sess.query(Results).all():
-        student_info = db_sess.query(Studies_it_cube).filter(Studies_it_cube.Id_student == resul.Id_student).first()
+    for result in db_sess.query(Results).all():
+        student_info = db_sess.query(Studies_it_cube).filter(Studies_it_cube.Id_student == result.Id_student).first()
         student = db_sess.query(Students).filter(Students.id == student_info.Id_student).first().FIO
 
-        employeer = db_sess.query(Employees).filter(Employees.id == resul.Id_employer).first().FIO
+        employeer = db_sess.query(Employees).filter(Employees.id == result.Id_employer).first().FIO
 
         direction = db_sess.query(Directions).filter(Directions.id == student_info.Direction).first().Direction
 
-        id_event = db_sess.query(Stages_Events).filter(Stages_Events.id == resul.Id_stage_event).first().Id_event
+        id_event = db_sess.query(Stages_Events).filter(Stages_Events.id == result.Id_stage_event).first().Id_event
         event = db_sess.query(Event).filter(Event.id == id_event).first().Name_of_event
 
-        res = db_sess.query(Achievement).filter(Achievement.id == resul.Id_achievement).first().Achievement
+        id_stage = db_sess.query(Stages_Events).filter(Stages_Events.Id_event == id_event).first().Id_stage
+        date = db_sess.query(Stages).filter(Stages.id == id_stage).first().Date_end
 
-        res_dict[resul.id] = [student, employeer, direction, event, res]
+        status_id = db_sess.query(Event).filter(Event.id == id_event).first().Status
+        status = db_sess.query(Status).filter(Status.id == status_id).first().Status_name
+
+        res = db_sess.query(Achievement).filter(Achievement.id == result.Id_achievement).first().Achievement
+
+        res_dict[result.id] = [student, employeer, direction, event, status, date, res]
+
+    return render_template('reports.html', all_reports=res_dict)
+
+
+@app.route('/export_students')
+def export_students():
+    list1 = []
+    list2 = []
+    list3 = []
+    list4 = []
+    list5 = []
+    list6 = []
+    list7 = []
+    list8 = []
+    list9 = []
+    list10 = []
+    list11 = []
+
+    col1 = "№"
+    col2 = "ФИО"
+    col3 = "Дата рождения"
+    col4 = "Класс"
+    col5 = "Сертификат ДО"
+    col6 = "Место жительства"
+    col7 = "Школа"
+    col8 = "Номер телефона"
+    col9 = "Номер телефона родителя"
+    col10 = "Пол"
+    col11 = "Примечание"
+
+    db_sess = db_session.create_session()
+
+    res_dict = {}
+    for stud in db_sess.query(Students).all():
+        res_dict[stud.id] = [stud.FIO, stud.Date_of_birth, stud.Class, stud.Сertificate_DO, stud.Place_of_residence,
+                             stud.School, stud.Number_phone_student, stud.Number_phone_parent,
+                             stud.Gender, stud.Note]
+
+        list1.append(stud.id)
+        list2.append(stud.FIO)
+        list3.append(stud.Date_of_birth)
+        list4.append(stud.Class)
+        list5.append(stud.Сertificate_DO)
+        list6.append(stud.Place_of_residence)
+        list7.append(stud.School)
+        list8.append(stud.Number_phone_student)
+        list9.append(stud.Number_phone_parent)
+        list10.append(stud.Gender)
+        list11.append(stud.Note)
+
+    data = pd.DataFrame({col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8, col9: list9, col10: list10, col11: list11})
+
+    data.to_excel('all_exports/students.xlsx', sheet_name='sheet1', index=False)
+
+    return render_template('students.html', all_students=res_dict)
+
+
+@app.route('/export_employees')
+def export_employees():
+    list1 = []
+    list2 = []
+    list3 = []
+    list4 = []
+    list5 = []
+    list6 = []
+    list7 = []
+    list8 = []
+
+    col1 = "№"
+    col2 = "ФИО"
+    col3 = "Дата рождения"
+    col4 = "Место жительства"
+    col5 = "Номер телефона"
+    col6 = "Пол"
+    col7 = "Статус"
+    col8 = "Примечание"
+
+    db_sess = db_session.create_session()
+    res_dict = {}
+    for empl in db_sess.query(Employees).all():
+        status = db_sess.query(StatusEmployer).filter(StatusEmployer.id == empl.Status).first()
+        res_dict[empl.id] = [empl.FIO, empl.Email, empl.Hashed_password, empl.Date_of_birth,
+                             empl.Place_of_residence, empl.Number_phone, empl.Gender, status.Role,
+                             empl.Note]
+
+        list1.append(empl.id)
+        list2.append(empl.FIO)
+        list3.append(empl.Date_of_birth)
+        list4.append(empl.Place_of_residence)
+        list5.append(empl.Number_phone)
+        list6.append(empl.Gender)
+        list7.append(status.Role)
+        list8.append(empl.Note)
+
+    data = pd.DataFrame({col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8})
+
+    data.to_excel('all_exports/employees.xlsx', sheet_name='sheet1', index=False)
+
+    return render_template('employees.html', all_employees=res_dict)
+
+
+@app.route('/export_reports')
+def export_reports():
+    list1 = []
+    list2 = []
+    list3 = []
+    list4 = []
+    list5 = []
+    list6 = []
+    list7 = []
+    list8 = []
+
+    col1 = "№"
+    col2 = "Ученик"
+    col3 = "Наставник"
+    col4 = "Направление"
+    col5 = "Мероприятие"
+    col6 = "Статус"
+    col7 = "Дата"
+    col8 = "Результат"
+
+    db_sess = db_session.create_session()
+    res_dict = {}
+    for result in db_sess.query(Results).all():
+        student_info = db_sess.query(Studies_it_cube).filter(Studies_it_cube.Id_student == result.Id_student).first()
+        student = db_sess.query(Students).filter(Students.id == student_info.Id_student).first().FIO
+
+        employeer = db_sess.query(Employees).filter(Employees.id == result.Id_employer).first().FIO
+
+        direction = db_sess.query(Directions).filter(Directions.id == student_info.Direction).first().Direction
+
+        id_event = db_sess.query(Stages_Events).filter(Stages_Events.id == result.Id_stage_event).first().Id_event
+        event = db_sess.query(Event).filter(Event.id == id_event).first().Name_of_event
+
+        id_stage = db_sess.query(Stages_Events).filter(Stages_Events.Id_event == id_event).first().Id_stage
+        date = db_sess.query(Stages).filter(Stages.id == id_stage).first().Date_end
+
+        status_id = db_sess.query(Event).filter(Event.id == id_event).first().Status
+        status = db_sess.query(Status).filter(Status.id == status_id).first().Status_name
+
+        res = db_sess.query(Achievement).filter(Achievement.id == result.Id_achievement).first().Achievement
+
+
+        res_dict[result.id] = [student, employeer, direction, event, status, date, res]
+
+        list1.append(result.id)
+        list2.append(student)
+        list3.append(employeer)
+        list4.append(direction)
+        list5.append(event)
+        list6.append(status)
+        list7.append(date)
+        list8.append(res)
+
+    data = pd.DataFrame({col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8})
+
+    data.to_excel('all_exports/reports.xlsx', sheet_name='sheet1', index=False)
 
     return render_template('reports.html', all_reports=res_dict)
 

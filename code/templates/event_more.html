@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-center">{{ event.Name_of_event }}</h1>
+<div class="text-event">
+    <p>Организатор - {{ event.Organizer }}</p>
+    <p>{{ event.Description }}</p>
+    <p>Сайт - <a href="{{ event.Website }}" target="_blank">{{ event.Website }}</a></p>
+    <p>Ссылка на положение - <a href="{{ event.Link_to_position }}" target="_blank">Положение</a></p>
+    <p>Ссылка на регистрацию - <a href="{{ event.Link_to_regestration }}" target="_blank">Регистрация</a></p>
+    <p class="form_of_holding">Форма проведения - {{ form_hold.Form }}</p>
+    <p>Статус - {{ status.Status_name }}</p>
+    <p>Направление - {{ direction.Direction }}</p>
+    <p>Наставники -
+        {% for employer in employees %}
+                {{ employer }}
+        {% endfor %}
+    </p>
+    <p>Возраст - {{ event.Age }}</p>
+    <p>Класс - {{ event.Class }}</p>
+    <p>Примерное количество участников - {{ event.Number_of_participants }}</p>
+    <p>Примечания - {{ event.Note }}</p>
+    <a href="/event/{{event.id}}" class="btn btn-info">
+    Редактировать событие
+    </a>
+</div>
+<h2 class="text-center">Этапы</h2>
+<div class="table-responsive table-responsive-stages">
+    <table align="center" class="table table-hover">
+        <tr align="center">
+            <th>№</th>
+            <th>Этап</th>
+            <th>Дата начала</th>
+            <th>Дата окончания</th>
+            <th>Редактирование</th>
+        </tr>
+        {% for stage in stages %}
+            <tr align="center">
+                <td>{{ stage.id }}</td>
+                <td>{{ stage.Stage }}</td>
+                <td>{{ stage.Date_begin }}</td>
+                <td>{{ stage.Date_end }}</td>
+                <td><a href="/stage/{{stage.id}}" class="btn btn-light">Редактировать этап для события</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+<a href="/add_event_stage/{{event.id}}" class="btn btn-info add-stage">
+    Добавить этап для события
+</a>
+{% endblock %}

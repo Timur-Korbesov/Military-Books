@@ -48,14 +48,12 @@ class AddEventForm(FlaskForm):
                            choices=[(employer[0], employer[1]) for employer in Results_employer])
     Age = StringField('Промежуток возраста', validators=[DataRequired()])
     Class = StringField('Промежуток классов', validators=[DataRequired()])
-    Number_of_participants = StringField('Количество участнков', validators=[DataRequired()])
-    Note = TextAreaField('Примечания')
+    Number_of_participants = IntegerField('Количество участнков', validators=[DataRequired()])
+    Note = TextAreaField('Примечания', validators=[DataRequired()])
     submit = SubmitField('Добавить')
 
 
 class AddStageForm(FlaskForm):
-    Event = SelectField('Событие', validators=[DataRequired()], coerce=int,
-                        choices=[(event[0], event[1]) for event in Results_event])
     Stage = StringField('Этап события', validators=[DataRequired()])
     Date_begin = DateField('Дата начала', validators=[DataRequired()])
     Date_end = DateField('Дата окончания', validators=[DataRequired()])
