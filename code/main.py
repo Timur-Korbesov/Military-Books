@@ -410,7 +410,7 @@ def export_students():
 
     data = pd.DataFrame({col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8, col9: list9, col10: list10, col11: list11})
 
-    data.to_excel('students.xlsx', sheet_name='sheet1', index=False)
+    data.to_excel('all_exports/students.xlsx', sheet_name='sheet1', index=False)
 
     return render_template('students.html', all_students=res_dict)
 
@@ -454,7 +454,7 @@ def export_employees():
 
     data = pd.DataFrame({col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8})
 
-    data.to_excel('employees.xlsx', sheet_name='sheet1', index=False)
+    data.to_excel('all_exports/employees.xlsx', sheet_name='sheet1', index=False)
 
     return render_template('employees.html', all_employees=res_dict)
 
@@ -514,7 +514,7 @@ def export_reports():
 
     data = pd.DataFrame({col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8})
 
-    data.to_excel('reports.xlsx', sheet_name='sheet1', index=False)
+    data.to_excel('all_exports/reports.xlsx', sheet_name='sheet1', index=False)
 
     return render_template('reports.html', all_reports=res_dict)
 
