@@ -1,22 +1,20 @@
 .btn-input {
-    font-size: 20px;
+    font-size: 18px;
 }
 .nav-item:not(.btn_not) {
-    font-size: 20px;
+    font-size: 18px;
 }
-.nav-item, .btn_not {
-    padding-right: 30px;
+.navbar-brand img {
+    min-height: 62px;
+    min-width: 200px;
 }
 main {
-    margin-top: 60px;
+    margin-top: 30px;
     margin-bottom: 100px;
+    height: 1500px;
 }
-footer {
-    background-color: #b5b5b5;
-}
-.navbar-brand {
-    padding-right: 40px;
-}
+
+
 .form_of_holding {
     margin-right: 10px;
 }
@@ -46,4 +44,7 @@ footer {
     justify-content: center;
     margin-left: 40px;
     margin-right: 100px;
+}
+.carousel-item {
+    height: 500px;
 }

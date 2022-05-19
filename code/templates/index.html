@@ -1,11 +1,40 @@
 {% extends "base.html" %}
 
 {% block content %}
-<a href="/add_event" class="btn btn-warning add-event btn-lg" >
+<div class="carousel slide mb-5" id="carouselControls" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        {% if events_actually %}
+            <div class="carousel-item active">
+                <a href="event_more/{{ events_actually[0].id }}">
+                    <h2>{{ events_actually[0].Name_of_event }} </h2>
+                    <p>{{ events_actually[0].Note }}</p>
+                </a>
+            </div>
+            {% for event in events_actually %}
+                <div class="carousel-item">
+                    <a href="event_more/{{ event.id }}">
+                        <h2>{{ event.Name_of_event }}</h2>
+                        <p>{{ event.Note }}</p>
+                    </a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="carousel-item active">
+                <h2> Актуальных мероприятий нет </h2>
+            </div>
+        {% endif %}
+    </div>
+    <a class="carousel-control-prev" role="button" href="#carouselControls" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </a>
+    <a class="carousel-control-next" role="button" href="#carouselControls" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </a>
+</div>
+
+<a href="/add_event" class="btn btn-warning add-event btn-lg mb-3">
     Добавить событие
 </a>
-<br>
-    <br>
 <div class="table-responsive">
     <table align="center" class="table table-hover">
         <tr align="center">
@@ -14,7 +43,7 @@
             <th>Организатор</th>
             <th>Сайт</th>
             <th>Форма проведения</th>
-            <th>Статус </th>
+            <th>Статус</th>
             <th>Направление</th>
             <th>Возраст</th>
             <th>Класс</th>
@@ -23,30 +52,31 @@
         </tr>
         {% for event in events %}
             <tr align="center">
-                    <td>{{ event.id }}</td>
+                <td>{{ event.id }}</td>
                 <td>{{ event.Name_of_event }} <a href="event_more/{{ event.id }}"> (подробнее)</a></td>
-                    <td>{{ event.Organizer }}</td>
-                    <td><a href="{{ event.Website }}" target="_blank">{{ event.Website }}</a></td>
-                    {% for form_hold in form_of_hold %}
-                        {% if form_hold.id == event.Form_of_holding %}
-                            <td class="form_of_holding">{{ form_hold.Form }}</td>
-                        {% endif %}
-                    {% endfor %}
-                    {% for stat in status %}
-                        {% if stat.id == event.Status %}
-                            <td>{{ stat.Status_name }}</td>
-                        {% endif %}
-                    {% endfor %}
-                    {% for direction in direct %}
-                        {% if direction.id == event.Direction %}
-                            <td>{{ direction.Direction }}</td>
-                        {% endif %}
-                    {% endfor %}
+                <td>{{ event.Organizer }}</td>
+                <td><a href="{{ event.Website }}" target="_blank">{{ event.Website }}</a></td>
+                {% for form_hold in form_of_hold %}
+                    {% if form_hold.id == event.Form_of_holding %}
+                        <td class="form_of_holding">{{ form_hold.Form }}</td>
+                    {% endif %}
+                {% endfor %}
 
-                    <td>{{ event.Age }}</td>
-                    <td>{{ event.Class }}</td>
-                    <td>{{ event.Number_of_participants }}</td>
-                    <td>{{ event.Note }}</td>
+                {% for stat in status %}
+                    {% if stat.id == event.Status %}
+                        <td>{{ stat.Status_name }}</td>
+                    {% endif %}
+                {% endfor %}
+                {% for direction in direct %}
+                    {% if direction.id == event.Direction %}
+                        <td>{{ direction.Direction }}</td>
+                    {% endif %}
+                {% endfor %}
+
+                <td>{{ event.Age }}</td>
+                <td>{{ event.Class }}</td>
+                <td>{{ event.Number_of_participants }}</td>
+                <td>{{ event.Note }}</td>
             </tr>
         {% endfor %}
     </table>

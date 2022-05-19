@@ -1,4 +1,5 @@
 import os
+import datetime
 import sqlite3
 import pandas as pd
 
@@ -41,13 +42,20 @@ def load_user(user_id):
 def index():
     db_sess = db_session.create_session()
     events = db_sess.query(Event).all()
-    empls_partic = db_sess.query(Participation_employees).all()
-    empls = db_sess.query(Employees).all()
+    events_actually = []
+    now_date = datetime.date.today()
+    for ev in events:
+        stages_id = db_sess.query(Stages_Events).filter(ev.id == Stages_Events.Id_event).all()
+        for stage_id in stages_id:
+            st = db_sess.query(Stages).filter(stage_id.Id_stage == Stages.id).first()
+            if st.Date_begin >= now_date:
+                events_actually.append(ev)
+                break
     status = db_sess.query(Status).all()
     form_of_hold = db_sess.query(Form_of_Holding).all()
     direct = db_sess.query(Directions).all()
     return render_template("index.html", events=events, status=status,
-                           form_of_hold=form_of_hold,
+                           form_of_hold=form_of_hold, events_actually=events_actually,
                            direct=direct)
 
 
