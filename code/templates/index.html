@@ -2,19 +2,24 @@
 
 {% block content %}
 <div class="carousel slide mb-5" id="carouselControls" data-bs-ride="carousel">
-    <div class="carousel-inner">
+    <div class="carousel-inner" style="background-color: #FFFACD">
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
         {% if events_actually %}
             <div class="carousel-item active">
                 <a href="event_more/{{ events_actually[0].id }}">
-                    <h2>{{ events_actually[0].Name_of_event }} </h2>
-                    <p>{{ events_actually[0].Note }}</p>
+                    <h2 align="center">{{ events_actually[0].Name_of_event }} </h2>
+                    <p align="center">{{ events_actually[0].Note }}</p>
                 </a>
             </div>
             {% for event in events_actually %}
                 <div class="carousel-item">
                     <a href="event_more/{{ event.id }}">
-                        <h2>{{ event.Name_of_event }}</h2>
-                        <p>{{ event.Note }}</p>
+                        <h2 align="center">{{ event.Name_of_event }}</h2>
+                        <p align="center">{{ event.Note }}</p>
                     </a>
                 </div>
             {% endfor %}
