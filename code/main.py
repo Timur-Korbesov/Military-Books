@@ -152,6 +152,16 @@ def results():
                 WHERE id_event == ? AND id_stage == ?
                 """
         result_stage_id = cur.execute(quare_stages_events, (form_event.event.data, form_result.stage.data)).fetchall()
+        quare_employer = f"""
+                    SELECT id, FIO FROM Employees  
+                    """
+        results_employer = cur.execute(quare_employer).fetchall()
+        form_result.FIO_employer.choices = [(employer[0], employer[1]) for employer in results_employer]
+        quare_student = f"""
+                SELECT id, FIO FROM Students  
+                """
+        results_student = cur.execute(quare_student).fetchall()
+        form_result.FIO.choices = [(student[0], student[1]) for student in results_student]
         db_sess = db_session.create_session()
 
         f = request.files['achievement_photo']
@@ -205,6 +215,13 @@ def event_more(id):
 @login_required
 def add_event():
     form = AddEventForm()
+    con = sqlite3.connect('./db/it-cube-data.db')
+    cur = con.cursor()
+    quare_employer = f"""
+            SELECT id, FIO FROM Employees  
+            """
+    results_employer = cur.execute(quare_employer).fetchall()
+    form.Employer.choices = [(employer[0], employer[1]) for employer in results_employer]
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         f = request.files['Photo']
@@ -436,6 +453,7 @@ def add_student():
             db_sess.add(new_student)
             db_sess.commit()
         student_id = db_sess.query(Students).filter(Students.FIO == new_student.FIO).first().id
+        print(student_id)
         redirect(f'/more_student/{student_id}')
     return render_template('add_student.html', form=form)
 

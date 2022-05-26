@@ -20,7 +20,7 @@ class RegisterForm(FlaskForm):
                                                                                          (4, 'Администратор'),
                                                                                          (5, 'Педагог организатор')])
     note = TextAreaField('Дополнительно')
-    submit = SubmitField('Зарегестрироваться')
+    submit = SubmitField('Зарегистрироваться')
 
 
 class LoginForm(FlaskForm):

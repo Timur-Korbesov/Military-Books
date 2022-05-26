@@ -48,7 +48,7 @@ class AddEventForm(FlaskForm):
                            choices=[(employer[0], employer[1]) for employer in Results_employer])
     Age = StringField('Возрастные ограничения')
     Class = StringField('Промежуток классов', validators=[DataRequired()])
-    Number_of_participants = StringField('Количество участнков')
+    Number_of_participants = StringField('Примерное количество участнков')
     Note = TextAreaField('Примечания')
     Photo = FileField('Фото события')
     submit = SubmitField('Подтвердить')
