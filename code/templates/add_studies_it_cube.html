@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3 align="center">Форма добавления направления для ученика - {{student.FIO}}</h3>
+<form action="" method="post" enctype="multipart/form-data">
+    <p>
+        {{ form.hidden_tag() }}<br>
+        {{ form.Direction.label }}<br>
+        {{ form.Direction(class="form-control", type="name") }}<br>
+        {% for error in form.Direction.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.Date_of_admission.label }}<br>
+        {{ form.Date_of_admission(class="form-control") }}<br>
+        {% for error in form.Date_of_admission.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.Date_of_deductions.label }}<br>
+        {{ form.Date_of_deductions(class="form-control") }}<br>
+        {% for error in form.Date_of_deductions.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.Id_employer.label }}<br>
+        {{ form.Id_employer(class="form-control", type="name") }}<br>
+        {% for error in form.Id_employer.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <br>
+    {{ form.submit(type="submit", class="btn btn-primary") }}
+</form>
+{% endblock %}

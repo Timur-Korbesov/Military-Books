@@ -29,14 +29,17 @@ quare_stages = f"""
         WHERE id == ?
         """
 Results_student = cur.execute(quare_student).fetchall()
-Results_event = cur.execute(quare_event).fetchall()
 Results_achievement = cur.execute(quare_achievement).fetchall()
+Results_event = cur.execute(quare_event).fetchall()
 Results_employer = cur.execute(quare_employer).fetchall()
-Results_stages_id = cur.execute(quare_stages_id, (Results_event[0][0], )).fetchall()
+Results_stages_id = None
+if Results_event:
+    Results_stages_id = cur.execute(quare_stages_id, (Results_event[0][0], )).fetchall()
 Results_stages = []
-for i in Results_stages_id:
-    res_stages = cur.execute(quare_stages, (i[0], )).fetchall()
-    Results_stages.append(res_stages[0])
+if Results_stages_id:
+    for i in Results_stages_id:
+        res_stages = cur.execute(quare_stages, (i[0], )).fetchall()
+        Results_stages.append(res_stages[0])
 
 
 class EventForm(FlaskForm):

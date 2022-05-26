@@ -7,14 +7,14 @@
             <div class="carousel-item active">
                 <a href="event_more/{{ events_actually[0].id }}">
                     <h2>{{ events_actually[0].Name_of_event }} </h2>
-                    <p>{{ events_actually[0].Note }}</p>
+                    <p>{{ events_actually[0].Description }}</p>
                 </a>
             </div>
             {% for event in events_actually %}
                 <div class="carousel-item">
                     <a href="event_more/{{ event.id }}">
                         <h2>{{ event.Name_of_event }}</h2>
-                        <p>{{ event.Note }}</p>
+                        <p>{{ event.Description }}</p>
                     </a>
                 </div>
             {% endfor %}
@@ -45,7 +45,7 @@
             <th>Форма проведения</th>
             <th>Статус</th>
             <th>Направление</th>
-            <th>Возраст</th>
+            <th>Возрастные ограничения</th>
             <th>Класс</th>
             <th>Примерное количество участников</th>
             <th>Примечания</th>

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Форма {{edit_or_add}} этапа для события - {{event.Name_of_event}}</h1>
+<h3 align="center">Форма {{edit_or_add}} этапа для события - {{event.Name_of_event}}</h3>
 <form action="" method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     <p>

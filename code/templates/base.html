@@ -24,7 +24,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav justify-content-between">
                     <li class="nav-item">
-                        <a class="nav-link active" href="/">Главная</a>
+                        <a class="nav-link" href="/">Мероприятия</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/results_event">Результаты</a>
@@ -39,7 +39,7 @@
                         <a class="nav-link" href="/employees">Сотрудники</a>
                     </li>
                     {% if not current_user.is_authenticated %}
-                    <li class="nav-item btn_not">
+                    <li class="nav-item btn_not" style="margin-right: 20px;">
                         <a class="btn btn-primary btn-input btn-sm" href="/register">Зарегистрироваться</a>
                     </li>
                     <li class="nav-item btn_not">
@@ -59,7 +59,7 @@
 <main role="main" class="container-fluid">
     {% block content %} {% endblock %}
 </main>
-<footer class="navbar">
+<footer class="navbar ">
     <div class="container-fluid">
         <a class="navbar-brand" href="http://www.itcube15.ru/" target="_blank"><img src="{{url_for('static', filename='img/logo.jpg')}}" alt="логотип"
                                                       class="img-fluid"></a>

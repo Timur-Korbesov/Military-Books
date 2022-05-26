@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, IntegerField, SelectField, DateField
-from wtforms import BooleanField, SubmitField
+from wtforms import StringField, TextAreaField, FileField, SelectField, DateField
+from wtforms import SubmitField
 from wtforms.validators import DataRequired
 
 import sqlite3
@@ -36,7 +36,7 @@ class AddEventForm(FlaskForm):
     Description = TextAreaField('Описание', validators=[DataRequired()])
     Website = StringField('Сайт', validators=[DataRequired()])
     Link_to_position = StringField('Ссылка на положение', validators=[DataRequired()])
-    Link_to_regestration = StringField('Ссылка на регестрацию', validators=[DataRequired()])
+    Link_to_regestration = StringField('Ссылка на регистрацию', validators=[DataRequired()])
 
     Form_of_holding = SelectField('Форма проведения', validators=[DataRequired()], coerce=int,
                                   choices=[(form_hold[0], form_hold[1]) for form_hold in Results_form_hold])
@@ -46,15 +46,16 @@ class AddEventForm(FlaskForm):
                             choices=[(direct[0], direct[1]) for direct in Results_direct])
     Employer = SelectField('Наставник', validators=[DataRequired()], coerce=int,
                            choices=[(employer[0], employer[1]) for employer in Results_employer])
-    Age = StringField('Промежуток возраста', validators=[DataRequired()])
+    Age = StringField('Возрастные ограничения')
     Class = StringField('Промежуток классов', validators=[DataRequired()])
-    Number_of_participants = IntegerField('Количество участнков', validators=[DataRequired()])
-    Note = TextAreaField('Примечания', validators=[DataRequired()])
-    submit = SubmitField('Добавить')
+    Number_of_participants = StringField('Количество участнков')
+    Note = TextAreaField('Примечания')
+    Photo = FileField('Фото события')
+    submit = SubmitField('Подтвердить')
 
 
 class AddStageForm(FlaskForm):
     Stage = StringField('Этап события', validators=[DataRequired()])
     Date_begin = DateField('Дата начала', validators=[DataRequired()])
     Date_end = DateField('Дата окончания', validators=[DataRequired()])
-    submit = SubmitField('Добавить')
+    submit = SubmitField('Подтвердить')

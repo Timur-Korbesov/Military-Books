@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Форма добавления события</h1>
+<h3 align="center">Форма добавления события</h3>
 <form action="" method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     <p>
@@ -9,7 +9,7 @@
         {{ form.Name_of_event(class="form-control") }}<br>
         {% for error in form.Name_of_event.errors %}
     <p class="alert alert-danger" role="alert">
-        {{ error }}
+        {{ error.label }}
     </p>
     {% endfor %}
     </p>
@@ -130,6 +130,16 @@
     </p>
     {% endfor %}
     </p>
+    <p>
+        {{ form.Photo.label(class="form-label") }}
+        {{ form.Photo(type="file") }}
+        {% for error in form.Photo.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <br>
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
     {{message}}
 </form>

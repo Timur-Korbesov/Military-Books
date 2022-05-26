@@ -1,3 +1,7 @@
+html,
+body {
+  height: 100%;
+}
 .btn-input {
     font-size: 18px;
 }
@@ -11,10 +15,7 @@
 main {
     margin-top: 30px;
     margin-bottom: 100px;
-    height: 1500px;
 }
-
-
 .form_of_holding {
     margin-right: 10px;
 }

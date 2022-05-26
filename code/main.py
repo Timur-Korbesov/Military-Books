@@ -18,8 +18,9 @@ from data.stages_event import Stages_Events, Stages
 from forms.user import RegisterForm, LoginForm
 from forms.result import ResultsForm, EventForm
 from forms.event import AddEventForm, AddStageForm
+from forms.reports import FiltersForm
 from forms import result
-from forms.students_forms import AddStudents
+from forms.students_forms import AddStudents, AddStudyItCube
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'it-cube-ol15'
@@ -27,7 +28,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 # Формы для результатов
-form_event = EventForm
+form_event = None
 results_stages = []
 
 
@@ -57,6 +58,123 @@ def index():
     return render_template("index.html", events=events, status=status,
                            form_of_hold=form_of_hold, events_actually=events_actually,
                            direct=direct)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        user = db_sess.query(Employees).filter(Employees.Email == form.email.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember_me.data)
+            return redirect("/")
+        return render_template('login.html',
+                               message="Неправильный логин или пароль",
+                               form=form)
+    return render_template('login.html', title='Авторизация', form=form)
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def reqister():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        if form.password.data != form.password_again.data:
+            return render_template('register.html', title='Регистрация',
+                                   form=form,
+                                   message="Пароли не совпадают")
+        db_sess = db_session.create_session()
+        if db_sess.query(Employees).filter(Employees.Email == form.email.data).first():
+            return render_template('register.html', title='Регистрация',
+                                   form=form,
+                                   message="Такой пользователь уже есть")
+        if db_sess.query(Employees).filter(Employees.Number_phone == form.number_phone.data).first():
+            return render_template('register.html', title='Регистрация',
+                                   form=form,
+                                   message="Пользователь с таким номером телефона уже существует")
+        employer = Employees(
+            FIO=form.FIO.data,
+            Email=form.email.data,
+            Date_of_birth=form.date_of_birth.data,
+            Place_of_residence=form.place_of_residence.data,
+            Number_phone=form.number_phone.data,
+            Gender=form.gender.data,
+            Status=form.status.data,
+            Note=form.note.data
+        )
+        employer.set_password(form.password.data)
+        db_sess.add(employer)
+        db_sess.commit()
+        return redirect('/login')
+    return render_template('register.html', title='Регистрация', form=form)
+
+
+@app.route('/results_event', methods=['GET', 'POST'])
+@login_required
+def results_event():
+    global form_event, results_stages
+    form_event = ''
+    form_event = EventForm()
+    con = sqlite3.connect('./db/it-cube-data.db')
+    cur = con.cursor()
+    results_event = cur.execute(result.quare_event).fetchall()
+    form_event.event.choices = [(ev[0], ev[1]) for ev in results_event]
+    if form_event.is_submitted():
+        event_id = form_event.event.data
+        results_stages_id = cur.execute(result.quare_stages_id, (event_id,)).fetchall()
+        results_stages = []
+        for i in results_stages_id:
+            res_stages = cur.execute(result.quare_stages, (i[0],)).fetchall()
+            results_stages.append(res_stages[0])
+        return redirect('/results')
+    return render_template('results_event.html', title='Добавление результата',
+                           form=form_event)
+
+
+@app.route('/results', methods=['GET', 'POST'])
+@login_required
+def results():
+    global results_stages, form_event
+    form_result = ResultsForm()
+    form_result.stage.choices = [(stage[0], stage[1]) for stage in results_stages]
+    con = sqlite3.connect('./db/it-cube-data.db')
+    cur = con.cursor()
+    if form_result.validate_on_submit():
+        quare_stages_events = f"""
+                SELECT id FROM Stages_Events
+                WHERE id_event == ? AND id_stage == ?
+                """
+        result_stage_id = cur.execute(quare_stages_events, (form_event.event.data, form_result.stage.data)).fetchall()
+        db_sess = db_session.create_session()
+
+        f = request.files['achievement_photo']
+        if secure_filename(f.filename):
+            path = 'static/img/' + secure_filename(f.filename)
+            f.save(path)
+            with open(path, 'rb') as file:
+                blob_data = file.read()
+            os.remove(path)
+            res = Results(
+                Id_stage_event=result_stage_id[0][0],
+                Id_student=form_result.FIO.data,
+                Id_achievement=form_result.achievement.data,
+                Id_employer=form_result.FIO_employer.data,
+                Diploms=blob_data
+            )
+            db_sess.add(res)
+            db_sess.commit()
+            return redirect('/results')
+        else:
+            form_result.achievement_photo.errors.append('Не выбран файл')
+    return render_template('results.html', title='Добавление результата',
+                           form=form_result)
 
 
 @app.route("/event_more/<int:id>")
@@ -89,6 +207,12 @@ def add_event():
     form = AddEventForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
+        f = request.files['Photo']
+        path = 'static/img/' + secure_filename(f.filename)
+        f.save(path)
+        with open(path, 'rb') as file:
+            blob_data = file.read()
+        os.remove(path)
         event = Event(
             Name_of_event=form.Name_of_event.data,
             Organizer=form.Organizer.data,
@@ -102,7 +226,8 @@ def add_event():
             Age=form.Age.data,
             Class=form.Class.data,
             Note=form.Note.data,
-            Number_of_participants=form.Number_of_participants.data
+            Number_of_participants=form.Number_of_participants.data,
+            Photo=blob_data
         )
         db_sess.add(event)
         db_sess.commit()
@@ -115,7 +240,8 @@ def add_event():
         )
         db_sess.add(partic_empl)
         db_sess.commit()
-        return redirect('/')
+        ev = db_sess.query(Event).filter(Event.Name_of_event == event.Name_of_event).first()
+        return redirect(f'/event_more/{ev.id}')
     return render_template('event.html', title='Добавление события',
                            form=form)
 
@@ -232,117 +358,6 @@ def event(id):
                            )
 
 
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect("/")
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        user = db_sess.query(Employees).filter(Employees.Email == form.email.data).first()
-        if user and user.check_password(form.password.data):
-            login_user(user, remember=form.remember_me.data)
-            return redirect("/")
-        return render_template('login.html',
-                               message="Неправильный логин или пароль",
-                               form=form)
-    return render_template('login.html', title='Авторизация', form=form)
-
-
-@app.route('/register', methods=['GET', 'POST'])
-def reqister():
-    form = RegisterForm()
-    if form.validate_on_submit():
-        if form.password.data != form.password_again.data:
-            return render_template('register.html', title='Регистрация',
-                                   form=form,
-                                   message="Пароли не совпадают")
-        db_sess = db_session.create_session()
-        if db_sess.query(Employees).filter(Employees.Email == form.email.data).first():
-            return render_template('register.html', title='Регистрация',
-                                   form=form,
-                                   message="Такой пользователь уже есть")
-        if db_sess.query(Employees).filter(Employees.Number_phone == form.number_phone.data).first():
-            return render_template('register.html', title='Регистрация',
-                                   form=form,
-                                   message="Пользователь с таким номером телефона уже существует")
-        employer = Employees(
-            FIO=form.FIO.data,
-            Email=form.email.data,
-            Date_of_birth=form.date_of_birth.data,
-            Place_of_residence=form.place_of_residence.data,
-            Number_phone=form.number_phone.data,
-            Gender=form.gender.data,
-            Status=form.status.data,
-            Note=form.note.data
-        )
-        employer.set_password(form.password.data)
-        db_sess.add(employer)
-        db_sess.commit()
-        return redirect('/login')
-    return render_template('register.html', title='Регистрация', form=form)
-
-
-@app.route('/results_event', methods=['GET', 'POST'])
-@login_required
-def results_event():
-    global form_event, results_stages
-    form_event = EventForm()
-    con = sqlite3.connect('./db/it-cube-data.db')
-    cur = con.cursor()
-    if form_event.is_submitted():
-        event_id = form_event.event.data
-        results_stages_id = cur.execute(result.quare_stages_id, (event_id,)).fetchall()
-        results_stages = []
-        for i in results_stages_id:
-            res_stages = cur.execute(result.quare_stages, (i[0],)).fetchall()
-            results_stages.append(res_stages[0])
-        return redirect('/results')
-    return render_template('results_event.html', title='Добавление результата',
-                           form=form_event)
-
-
-@app.route('/results', methods=['GET', 'POST'])
-@login_required
-def results():
-    global results_stages, form_event
-    form_result = ResultsForm()
-    form_result.stage.choices = [(stage[0], stage[1]) for stage in results_stages]
-    con = sqlite3.connect('./db/it-cube-data.db')
-    cur = con.cursor()
-    if form_result.validate_on_submit():
-        quare_stages_events = f"""
-                SELECT id FROM Stages_Events
-                WHERE id_event == ? AND id_stage == ?
-                """
-        result_stage_id = cur.execute(quare_stages_events, (form_event.event.data, form_result.stage.data)).fetchall()
-        db_sess = db_session.create_session()
-
-        f = request.files['achievement_photo']
-        path = 'static/img/' + secure_filename(f.filename)
-        f.save(path)
-        with open(path, 'rb') as file:
-            blob_data = file.read()
-        os.remove(path)
-        res = Results(
-            Id_stage_event=result_stage_id[0][0],
-            Id_student=form_result.FIO.data,
-            Id_achievement=form_result.achievement.data,
-            Id_employer=form_result.FIO_employer.data,
-            Diploms=blob_data
-        )
-        db_sess.add(res)
-        db_sess.commit()
-        return redirect('/results')
-    return render_template('results.html', title='Добавление результата',
-                           form=form_result)
-
-
 @app.route('/students')
 def students():
     db_sess = db_session.create_session()
@@ -353,6 +368,50 @@ def students():
                              stud.School, stud.Number_phone_student, stud.Number_phone_parent,
                              stud.Gender, stud.Note]
     return render_template('students.html', all_students=res_dict)
+
+
+@app.route("/student/<int:id>", methods=['GET', 'POST'])
+@login_required
+def student(id):
+    form = AddStudents()
+    if request.method == "GET":
+        db_sess = db_session.create_session()
+        student = db_sess.query(Students).filter(Students.id == id).first()
+        if student:
+            form.FIO.data = student.FIO
+            form.date_of_birth.data = student.Date_of_birth
+            form.class_number.data = student.Class
+            form.certificate_do.data = student.Сertificate_DO
+            form.place_of_residence.data = student.Place_of_residence
+            form.school.data = student.School
+            form.number_phone.data = student.Number_phone_student
+            form.number_phone_parent.data = student.Number_phone_parent
+            form.gender.data = student.Gender
+            form.note.data = student.Note
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        student = db_sess.query(Students).filter(Students.id == id).first()
+        if student:
+            student.FIO = form.FIO.data
+            student.Date_of_birth = form.date_of_birth.data
+            student.Class = form.class_number.data
+            student.Сertificate_DO = form.certificate_do.data
+            student.Place_of_residence = form.place_of_residence.data
+            student.School = form.school.data
+            student.Number_phone_student = form.number_phone.data
+            student.Number_phone_parent = form.number_phone_parent.data
+            student.Gender = form.gender.data
+            student.Note = form.note.data
+            db_sess.commit()
+            return redirect(f'/more_student/{student.id}')
+        else:
+            abort(404)
+    return render_template('add_student.html',
+                           title='Редактирование информации об ученике',
+                           form=form, button_title='Отредактировать'
+                           )
 
 
 @app.route('/add_student', methods=['GET', 'POST'])
@@ -376,8 +435,75 @@ def add_student():
         if not db_sess.query(Students).filter(Students.Number_phone_student == form.number_phone.data).first():
             db_sess.add(new_student)
             db_sess.commit()
-        redirect('/add_student')
+        student_id = db_sess.query(Students).filter(Students.FIO == new_student.FIO).first().id
+        redirect(f'/more_student/{student_id}')
     return render_template('add_student.html', form=form)
+
+
+@app.route('/more_student/<int:id>')
+def more_students(id):
+    db_sess = db_session.create_session()
+    student = db_sess.query(Students).filter(Students.id == id).first()
+    studies_it_cube = db_sess.query(Studies_it_cube).filter(Studies_it_cube.Id_student == student.id).all()
+    all_studies_it_cube = []
+    for stud in studies_it_cube:
+        direction = db_sess.query(Directions).filter(Directions.id == stud.Direction).first()
+        employer = db_sess.query(Employees).filter(Employees.id == stud.Id_employer).first()
+        all_studies_it_cube.append([stud, direction, employer])
+    return render_template('students_more.html', title='Подробности об ученике',
+                           student=student, studies_it_cube=all_studies_it_cube)
+
+
+@app.route('/add_studies_it_cube/<int:id>', methods=['GET', 'POST'])
+@login_required
+def add_studies_it_cube(id):
+    form = AddStudyItCube()
+    db_sess = db_session.create_session()
+    student = db_sess.query(Students).filter(Students.id == id).first()
+    if form.validate_on_submit():
+        stud = Studies_it_cube(
+            Direction=form.Direction.data,
+            Date_of_admission=form.Date_of_admission.data,
+            Date_of_deductions=form.Date_of_deductions.data,
+            Id_employer=form.Id_employer.data,
+            Id_student=student.id
+
+        )
+        db_sess.add(stud)
+        db_sess.commit()
+        return redirect(f'/more_student/{id}')
+    return render_template('add_studies_it_cube.html', form=form, student=student)
+
+
+@app.route("/studies_it_cube/<int:id>", methods=['GET', 'POST'])
+@login_required
+def studies_it_cube(id):
+    form = AddStudyItCube()
+    db_sess = db_session.create_session()
+    stud = db_sess.query(Studies_it_cube).filter(Studies_it_cube.id == id).first()
+    student = db_sess.query(Students).filter(Students.id == stud.Id_student).first()
+    if request.method == "GET":
+        if stud:
+            form.Direction.data = stud.Direction
+            form.Date_of_admission.data = stud.Date_of_admission
+            form.Date_of_deductions.data = stud.Date_of_deductions
+            form.Id_employer.data = stud.Id_employer
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        if stud:
+            stud.Direction = form.Direction.data
+            stud.Date_of_admission = form.Date_of_admission.data
+            stud.Date_of_deductions = form.Date_of_deductions.data
+            stud.Id_employer = form.Id_employer.data
+            db_sess.commit()
+            return redirect(f'/more_student/{student.id}')
+        else:
+            abort(404)
+    return render_template('add_studies_it_cube.html',
+                           title='Редактирование направления ученика',
+                           form=form, student=student
+                           )
 
 
 @app.route('/employees')
@@ -392,33 +518,84 @@ def employees():
     return render_template('employees.html', all_employees=res_dict)
 
 
-@app.route('/reports')
+@app.route('/reports', methods=['GET', 'POST'])
 def reports():
+    form = FiltersForm()
     db_sess = db_session.create_session()
-
     res_dict = {}
-    for result in db_sess.query(Results).all():
-        student_info = db_sess.query(Studies_it_cube).filter(Studies_it_cube.Id_student == result.Id_student).first()
-        student = db_sess.query(Students).filter(Students.id == student_info.Id_student).first().FIO
+    if form.validate_on_submit():
+        student_id = form.student.data
+        employer_id = form.employer.data
+        event_id = form.event.data
+        direction_id = form.direction.data
+        status_id = form.status.data
+        try:
+            data_begin = form.data_begin.data
+        except Exception:
+            data_begin = 0
+        try:
+            data_end = form.data_end.data
+        except Exception:
+            data_end = 0
+        achievement_id = form.achievement.data
+        for result in db_sess.query(Results).all():
+            if (student_id != -1 and result.Id_student != student_id) or (
+                    employer_id != -1 and result.Id_employer != employer_id) or (
+                    achievement_id != -1 and result.Id_achievement != achievement_id):
+                continue
 
-        employeer = db_sess.query(Employees).filter(Employees.id == result.Id_employer).first().FIO
+            student_info = db_sess.query(Studies_it_cube).filter(
+                Studies_it_cube.Id_student == result.Id_student).first()
+            student = db_sess.query(Students).filter(Students.id == student_info.Id_student).first().FIO
 
-        direction = db_sess.query(Directions).filter(Directions.id == student_info.Direction).first().Direction
+            employeer = db_sess.query(Employees).filter(Employees.id == result.Id_employer).first().FIO
 
-        id_event = db_sess.query(Stages_Events).filter(Stages_Events.id == result.Id_stage_event).first().Id_event
-        event = db_sess.query(Event).filter(Event.id == id_event).first().Name_of_event
+            id_event_stage = db_sess.query(Stages_Events).filter(Stages_Events.id == result.Id_stage_event).first()
+            event = db_sess.query(Event).filter(Event.id == id_event_stage.Id_event).first()
+            if (event_id != -1 and event.id != event_id) or (
+                    direction_id != -1 and event.Direction != direction_id) or (status_id != -1 and event.Status != -1):
+                continue
+            stage = db_sess.query(Stages).filter(Stages.id == id_event_stage.Id_stage).first()
 
-        id_stage = db_sess.query(Stages_Events).filter(Stages_Events.Id_event == id_event).first().Id_stage
-        date = db_sess.query(Stages).filter(Stages.id == id_stage).first().Date_end
+            direction = db_sess.query(Directions).filter(Directions.id == event.Direction).first().Direction
 
-        status_id = db_sess.query(Event).filter(Event.id == id_event).first().Status
-        status = db_sess.query(Status).filter(Status.id == status_id).first().Status_name
+            status = db_sess.query(Status).filter(Status.id == event.Status).first().Status_name
 
-        res = db_sess.query(Achievement).filter(Achievement.id == result.Id_achievement).first().Achievement
+            date = stage.Date_end
+            if data_begin and date < data_begin:
+                continue
+            if data_end and date > data_end:
+                continue
 
-        res_dict[result.id] = [student, employeer, direction, event, status, date, res]
+            achievement = db_sess.query(Achievement).filter(Achievement.id == result.Id_achievement).first().Achievement
 
-    return render_template('reports.html', all_reports=res_dict)
+            res_dict[result.id] = [student, employeer, direction, event.Name_of_event, stage.Stage, status, date,
+                                   achievement]
+
+    else:
+        for result in db_sess.query(Results).all():
+            student_info = db_sess.query(Studies_it_cube).filter(
+                Studies_it_cube.Id_student == result.Id_student).first()
+            student = db_sess.query(Students).filter(Students.id == student_info.Id_student).first().FIO
+
+            employeer = db_sess.query(Employees).filter(Employees.id == result.Id_employer).first().FIO
+
+            id_event_stage = db_sess.query(Stages_Events).filter(Stages_Events.id == result.Id_stage_event).first()
+            event = db_sess.query(Event).filter(Event.id == id_event_stage.Id_event).first()
+            stage = db_sess.query(Stages).filter(Stages.id == id_event_stage.Id_stage).first()
+
+            direction = db_sess.query(Directions).filter(Directions.id == event.Direction).first().Direction
+
+            status = db_sess.query(Status).filter(Status.id == event.Status).first().Status_name
+
+            date = db_sess.query(Stages).filter(Stages.id == stage.id).first().Date_end
+
+            achievement = db_sess.query(Achievement).filter(Achievement.id == result.Id_achievement).first().Achievement
+
+            res_dict[result.id] = [student, employeer, direction, event.Name_of_event, stage.Stage, status, date,
+                                   achievement]
+
+    return render_template('reports.html', all_reports=res_dict, form=form)
 
 
 @app.route('/export_students')
@@ -467,7 +644,9 @@ def export_students():
         list10.append(stud.Gender)
         list11.append(stud.Note)
 
-    data = pd.DataFrame({col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8, col9: list9, col10: list10, col11: list11})
+    data = pd.DataFrame(
+        {col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8,
+         col9: list9, col10: list10, col11: list11})
 
     data.to_excel('all_exports/students.xlsx', sheet_name='sheet1', index=False)
 
@@ -511,7 +690,8 @@ def export_employees():
         list7.append(status.Role)
         list8.append(empl.Note)
 
-    data = pd.DataFrame({col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8})
+    data = pd.DataFrame(
+        {col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8})
 
     data.to_excel('all_exports/employees.xlsx', sheet_name='sheet1', index=False)
 
@@ -559,7 +739,6 @@ def export_reports():
 
         res = db_sess.query(Achievement).filter(Achievement.id == result.Id_achievement).first().Achievement
 
-
         res_dict[result.id] = [student, employeer, direction, event, status, date, res]
 
         list1.append(result.id)
@@ -571,7 +750,8 @@ def export_reports():
         list7.append(date)
         list8.append(res)
 
-    data = pd.DataFrame({col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8})
+    data = pd.DataFrame(
+        {col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8})
 
     data.to_excel('all_exports/reports.xlsx', sheet_name='sheet1', index=False)
 

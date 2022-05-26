@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Форма добавления результатов события</h1>
+<h3 align="center">Форма добавления результатов события</h3>
 <form action="" method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     <p>
@@ -42,8 +42,12 @@
     </p>
     <p>
         {{ form.achievement_photo.label(class="form-label") }}<br>
-        {{ form.achievement_photo(type="file") }}<br><br>
-
+        {{ form.achievement_photo(type="file") }}<br>
+        {% for error in form.achievement_photo.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
     </p>
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
     {{message}}

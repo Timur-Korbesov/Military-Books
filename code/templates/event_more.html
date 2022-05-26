@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="text-center">{{ event.Name_of_event }}</h1>
+<h3 align="center">{{ event.Name_of_event }}</h3>
 <div class="text-event">
     <p>Организатор - {{ event.Organizer }}</p>
     <p>{{ event.Description }}</p>
@@ -24,11 +24,10 @@
     Редактировать событие
     </a>
 </div>
-<h2 class="text-center">Этапы</h2>
+<h3 class="text-center">Этапы</h3>
 <div class="table-responsive table-responsive-stages">
     <table align="center" class="table table-hover">
         <tr align="center">
-            <th>№</th>
             <th>Этап</th>
             <th>Дата начала</th>
             <th>Дата окончания</th>
@@ -36,7 +35,6 @@
         </tr>
         {% for stage in stages %}
             <tr align="center">
-                <td>{{ stage.id }}</td>
                 <td>{{ stage.Stage }}</td>
                 <td>{{ stage.Date_begin }}</td>
                 <td>{{ stage.Date_end }}</td>

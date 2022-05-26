@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3 align="center">{{ student.FIO }}</h3>
+<div class="text-event">
+    <p>Дата рождения - {{ student.Date_of_birth }}</p>
+    <p>Сертификат ДО - {{student.Сertificate_DO}}</p>
+    <p>Место проживания - {{ student.Place_of_residence }}</p>
+    <p>Школа - {{ student.School }}</p>
+    <p>Пол - {{ student.Gender }}</p>
+    <p>Класс обучения - {{ student.Class }}</p>
+    <p>Примечания - {{ student.Note }}</p>
+    <p>Номер телефона ученика - {{ student.Number_phone_student }}</p>
+    <p>Номер телефона родителя - {{ student.Number_phone_parent }}</p>
+    {% if student.Note %}
+        <p>{{ student.Note }}</p>
+    {% endif %}
+    <a href="/student/{{student.id}}" class="btn btn-info">
+    Редактировать информацию об участнике
+    </a>
+</div>
+<h3 class="text-center">Обучение в IT-Cube</h3>
+<div class="table-responsive table-responsive-stages">
+    <table align="center" class="table table-hover">
+        <tr align="center">
+            <th>Направление</th>
+            <th>Дата зачисления</th>
+            <th>Дата отчисления</th>
+            <th>Наставник</th>
+            <th>Редактирование</th>
+        </tr>
+        {% for stud in studies_it_cube %}
+            <tr align="center">
+                <td>{{ stud[1].Direction }}</td>
+                <td>{{ stud[0].Date_of_admission }}</td>
+                <td>{{ stud[0].Date_of_deductions }}</td>
+                <td>{{ stud[2].FIO }}</td>
+                <td><a href="/studies_it_cube/{{stud[0].id}}" class="btn btn-light">Редактировать</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+<a href="/add_studies_it_cube/{{student.id}}" class="btn btn-info add-stage">
+    Добавить направление для ученика
+</a>
+{% endblock %}

@@ -3,7 +3,6 @@
 {% block content %}
     <h3 align="center">Список учеников</h3>
     <br>
-    <br>
     <div class="align_center">
         <a type="button" class="btn btn-warning" href="/add_student">Добавить ученика</a>
     </div>
@@ -30,7 +29,7 @@
         {% for student in all_students.keys() %}
             <tr>
                 <td>{{ student }}</td>
-                <td>{{ all_students[student][0] }}</td>
+                <td>{{ all_students[student][0] }} <a href="/more_student/{{student}}">(подробнее)</a></td>
                 <td>{{ all_students[student][1] }}</td>
                 <td>{{ all_students[student][2] }}</td>
                 <td>{{ all_students[student][3] }}</td>

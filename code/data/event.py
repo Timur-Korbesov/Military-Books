@@ -46,10 +46,11 @@ class Event(SqlAlchemyBase, UserMixin, SerializerMixin):
     Status = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Status.id"), nullable=True)
     Direction = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Directions.id"), nullable=True)
 
-    Age = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    Age = sqlalchemy.Column(sqlalchemy.String)
     Class = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Note = sqlalchemy.Column(sqlalchemy.Text)
-    Number_of_participants = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+    Photo = sqlalchemy.Column(sqlalchemy.BLOB)
+    Number_of_participants = sqlalchemy.Column(sqlalchemy.String)
 
     direction = orm.relation('Directions')
     participation_employees = orm.relation("Participation_employees", back_populates='event')
