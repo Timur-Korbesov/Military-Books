@@ -1,17 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h3 align="center">Список учеников</h3>
-    <br>
-    <div class="align_center">
-        <a type="button" class="btn btn-warning" href="/add_student">Добавить ученика</a>
+    <h3 align="center" class="mb-4">Список учеников</h3>
+    <div class="align_center mb-4">
+        <a type="button" class="btn btn-md btn-warning" href="/add_student">Добавить ученика</a>
     </div>
-    <br>
-    <div class="align_center">
+    <div class="align_center mb-5">
         <a type="button" class="btn btn-success" href="/export_students">Экспорт в Excel</a>
     </div>
-    <br>
-    <br>
     <table align="center" class="table table-hover">
         <tr>
             <th>№</th>
@@ -28,7 +24,7 @@
         </tr>
         {% for student in all_students.keys() %}
             <tr>
-                <td>{{ student }}</td>
+                <td>{{ loop.index }}</td>
                 <td>{{ all_students[student][0] }} <a href="/more_student/{{student}}">(подробнее)</a></td>
                 <td>{{ all_students[student][1] }}</td>
                 <td>{{ all_students[student][2] }}</td>

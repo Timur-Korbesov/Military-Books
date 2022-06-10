@@ -1,0 +1,5 @@
+carousel_block_active = "carousel-item active justify-content-center"
+carousel_block = "carousel-item justify-content-center"
+carousel_block_not_ev = "carousel-item active d-flex align-items-center justify-content-center a-none-decoration"
+carousel_img = "d-flex justify-content-center"
+carousel_text = "carousel-caption"

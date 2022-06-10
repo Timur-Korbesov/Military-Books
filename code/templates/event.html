@@ -1,146 +1,184 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3 align="center">Форма добавления события</h3>
+<h3 align="center" xmlns="http://www.w3.org/1999/html">Форма {{name}} мероприятия</h3>
 <form action="" method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
-    <p>
-        {{ form.Name_of_event.label }}<br>
-        {{ form.Name_of_event(class="form-control") }}<br>
-        {% for error in form.Name_of_event.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error.label }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.Organizer.label }}<br>
-        {{ form.Organizer(class="form-control") }}<br>
-        {% for error in form.Organizer.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.Description.label }}<br>
-        {{ form.Description(class="form-control") }}<br>
-        {% for error in form.Description.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.Website.label }}<br>
-        {{ form.Website(class="form-control") }}<br>
-        {% for error in form.Website.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
+    <div class="row">
+        <div class="col-12">
+            {{ form.Name_of_event.label }}<br>
+            {{ form.Name_of_event(class="form-control") }}<br>
+            {% for error in form.Name_of_event.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error.label }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            {{ form.Organizer.label }}<br>
+            {{ form.Organizer(class="form-control") }}<br>
+            {% for error in form.Organizer.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            {{ form.Description.label }}<br>
+            {{ form.Description(class="form-control") }}<br>
+            {% for error in form.Description.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            {{ form.Website.label }}<br>
+            {{ form.Website(class="form-control") }}<br>
+            {% for error in form.Website.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
         {{ form.Link_to_position.label }}<br>
         {{ form.Link_to_position(class="form-control") }}<br>
         {% for error in form.Link_to_position.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.Link_to_regestration.label }}<br>
-        {{ form.Link_to_regestration(class="form-control") }}<br>
-        {% for error in form.Link_to_regestration.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.Form_of_holding.label }}<br>
-        {{ form.Form_of_holding(class="form-control") }}<br>
-        {% for error in form.Form_of_holding.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.Status.label }}<br>
-        {{ form.Status(class="form-control") }}<br>
-        {% for error in form.Status.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.Direction.label }}<br>
-        {{ form.Direction(class="form-control") }}<br>
-        {% for error in form.Direction.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.Employer.label }}<br>
-        {{ form.Employer(class="form-control") }}<br>
-        {% for error in form.Employer.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.Age.label }}<br>
-        {{ form.Age(class="form-control") }}<br>
-        {% for error in form.Age.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.Class.label }}<br>
-        {{ form.Class(class="form-control") }}<br>
-        {% for error in form.Class.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.Number_of_participants.label }}<br>
-        {{ form.Number_of_participants(class="form-control") }}<br>
-        {% for error in form.Number_of_participants.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.Note.label }}<br>
-        {{ form.Note(class="form-control") }}<br>
-        {% for error in form.Note.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-    </p>
-    <p>
-        {{ form.Photo.label(class="form-label") }}
-        {{ form.Photo(type="file") }}
-        {% for error in form.Photo.errors %}
             <p class="alert alert-danger" role="alert">
                 {{ error }}
             </p>
         {% endfor %}
-    </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            {{ form.Link_to_regestration.label }}<br>
+            {{ form.Link_to_regestration(class="form-control") }}<br>
+            {% for error in form.Link_to_regestration.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            {{ form.Form_of_holding.label }}<br>
+            {{ form.Form_of_holding(class="form-control") }}<br>
+            {% for error in form.Form_of_holding.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            {{ form.Status.label }}<br>
+            {{ form.Status(class="form-control") }}<br>
+            {% for error in form.Status.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-9 col-md-8 col-sm-6">
+            {{ form.Direction.label }}<br>
+            {{ form.Direction(class="form-control") }}<br>
+            {% for error in form.Direction.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+                {% endfor %}
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <br>
+            <a class="btn btn-secondary btn-input btn-sm" href="/add_direction/event/0">Добавить новое направление</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            {{ form.Employer.label }}<br>
+            {{ form.Employer(class="form-control") }}<br>
+            {% for error in form.Employer.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            {{ form.Age.label }}<br>
+            {{ form.Age(class="form-control") }}<br>
+            {% for error in form.Age.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            {{ form.Class.label }}<br>
+            {{ form.Class(class="form-control") }}<br>
+            {% for error in form.Class.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            {{ form.Number_of_participants.label }}<br>
+            {{ form.Number_of_participants(class="form-control") }}<br>
+            {% for error in form.Number_of_participants.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            {{ form.Note.label }}<br>
+            {{ form.Note(class="form-control") }}<br>
+            {% for error in form.Note.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <p>{{ photo }}</p>
+            {{ form.Photo(type="file", class="form-control") }}
+            {% for error in form.Photo.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
     <br>
+    <div class="row">
+        <div class="col-12">
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+        </div>
+    </div>
     {{message}}
 </form>
 {% endblock %}

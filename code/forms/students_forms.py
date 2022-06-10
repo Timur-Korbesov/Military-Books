@@ -4,8 +4,6 @@ from wtforms.validators import DataRequired
 
 import sqlite3
 
-con = sqlite3.connect('./db/it-cube-data.db')
-cur = con.cursor()
 
 quare_direct = f"""
         SELECT id, Direction FROM Directions  
@@ -13,8 +11,16 @@ quare_direct = f"""
 quare_employer = f"""
         SELECT id, FIO FROM Employees  
         """
-Results_direct = cur.execute(quare_direct).fetchall()
-Results_employer = cur.execute(quare_employer).fetchall()
+
+
+def update_studies_cube(direction, id_employer):
+    con = sqlite3.connect('./db/it-cube-data.db')
+    cur = con.cursor()
+    results_direct = cur.execute(quare_direct).fetchall()
+    results_employer = cur.execute(quare_employer).fetchall()
+
+    direction.choices = [(direct[0], direct[1]) for direct in results_direct]
+    id_employer.choices = [(employer[0], employer[1]) for employer in results_employer]
 
 
 class AddStudents(FlaskForm):
@@ -34,9 +40,9 @@ class AddStudents(FlaskForm):
 
 class AddStudyItCube(FlaskForm):
     Direction = SelectField('Направление', validators=[DataRequired()], coerce=int,
-                            choices=[(direct[0], direct[1]) for direct in Results_direct])
+                            choices=[])
     Date_of_admission = DateField('Дата зачисления', validators=[DataRequired()])
     Date_of_deductions = DateField('Дата отчисления', validators=[DataRequired()])
     Id_employer = SelectField('Наставник', validators=[DataRequired()], coerce=int,
-                              choices=[(employer[0], employer[1]) for employer in Results_employer])
+                              choices=[])
     submit = SubmitField('Подтвердить')

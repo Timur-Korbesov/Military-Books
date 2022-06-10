@@ -1,4 +1,3 @@
-import datetime
 import sqlalchemy
 from flask_login import UserMixin
 from sqlalchemy import orm
@@ -55,4 +54,3 @@ class Event(SqlAlchemyBase, UserMixin, SerializerMixin):
     direction = orm.relation('Directions')
     participation_employees = orm.relation("Participation_employees", back_populates='event')
     stage_events = orm.relation("Stages_Events", back_populates='event')
-

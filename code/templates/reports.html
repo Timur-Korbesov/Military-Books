@@ -3,89 +3,94 @@
 {% block content %}
     <h3 align="center" class="mb-3">Фильтры</h3>
     <div class="container-fluid mb-5">
-    <form action="" method="post" enctype="multipart/form-data" class="">
-    {{ form.hidden_tag() }}
-        <div class="row mb-3">
-            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
-                {{ form.student.label(class="form-label") }}<br>
-                {{ form.student(class="form-control") }}
-                {% for error in form.student.errors %}
-                    <p class="alert alert-danger" role="alert">
-                        {{ error }}
-                    </p>
-                {% endfor %}
+        <form action="" method="post" enctype="multipart/form-data" class="">
+        {{ form.hidden_tag() }}
+            <div class="row mb-3">
+                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
+                    {{ form.student.label(class="form-label") }}<br>
+                    {{ form.student(class="form-control") }}
+                    {% for error in form.student.errors %}
+                        <p class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </p>
+                    {% endfor %}
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
+                    {{ form.employer.label(class="form-label") }}<br>
+                    {{ form.employer(class="form-control") }}
+                    {% for error in form.employer.errors %}
+                        <p class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </p>
+                    {% endfor %}
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
+                    {{ form.event.label(class="form-label") }}<br>
+                    {{ form.event(class="form-control") }}
+                    {% for error in form.event.errors %}
+                        <p class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </p>
+                    {% endfor %}
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
+                    {{ form.direction.label(class="form-label") }}<br>
+                    {{ form.direction(class="form-control") }}
+                    {% for error in form.direction.errors %}
+                        <p class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </p>
+                    {% endfor %}
+                </div>
             </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
-                {{ form.employer.label(class="form-label") }}<br>
-                {{ form.employer(class="form-control") }}
-                {% for error in form.employer.errors %}
-                    <p class="alert alert-danger" role="alert">
-                        {{ error }}
-                    </p>
-                {% endfor %}
+            <div class="row mb-3">
+                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
+                    {{ form.status.label(class="form-label") }}<br>
+                    {{ form.status(class="form-control") }}
+                    {% for error in form.status.errors %}
+                        <p class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </p>
+                    {% endfor %}
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
+                    {{ form.data_begin.label(class="form-label") }}<br>
+                    {{ form.data_begin(class="form-control") }}
+                    {% for error in form.data_begin.errors %}
+                        <p class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </p>
+                    {% endfor %}
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
+                    {{ form.data_end.label(class="form-label") }}<br>
+                    {{ form.data_end(class="form-control") }}
+                    {% for error in form.data_end.errors %}
+                        <p class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </p>
+                    {% endfor %}
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
+                    {{ form.achievement.label(class="form-label") }}<br>
+                    {{ form.achievement(class="form-control") }}
+                    {% for error in form.achievement.errors %}
+                        <p class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </p>
+                    {% endfor %}
+                </div>
             </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
-                {{ form.event.label(class="form-label") }}<br>
-                {{ form.event(class="form-control") }}
-                {% for error in form.event.errors %}
-                    <p class="alert alert-danger" role="alert">
-                        {{ error }}
-                    </p>
-                {% endfor %}
+            <div class="row">
+                <div class="col-2">
+                    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+                </div>
+                <div class="col-2">
+                    <a type="button" class="btn btn-danger" href="/reports">Убрать все фильтры</a>
+                </div>
             </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
-                {{ form.direction.label(class="form-label") }}<br>
-                {{ form.direction(class="form-control") }}
-                {% for error in form.direction.errors %}
-                    <p class="alert alert-danger" role="alert">
-                        {{ error }}
-                    </p>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
-                {{ form.status.label(class="form-label") }}<br>
-                {{ form.status(class="form-control") }}
-                {% for error in form.status.errors %}
-                    <p class="alert alert-danger" role="alert">
-                        {{ error }}
-                    </p>
-                {% endfor %}
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
-                {{ form.data_begin.label(class="form-label") }}<br>
-                {{ form.data_begin(class="form-control") }}
-                {% for error in form.data_begin.errors %}
-                    <p class="alert alert-danger" role="alert">
-                        {{ error }}
-                    </p>
-                {% endfor %}
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
-                {{ form.data_end.label(class="form-label") }}<br>
-                {{ form.data_end(class="form-control") }}
-                {% for error in form.data_end.errors %}
-                    <p class="alert alert-danger" role="alert">
-                        {{ error }}
-                    </p>
-                {% endfor %}
-            </div>
-            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
-                {{ form.achievement.label(class="form-label") }}<br>
-                {{ form.achievement(class="form-control") }}
-                {% for error in form.achievement.errors %}
-                    <p class="alert alert-danger" role="alert">
-                        {{ error }}
-                    </p>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="row">
-            <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-        </div>
-    </form>
-</div>
+        </form>
+    </div>
     <h3 align="center" class="mb-3">Список отчётов</h3>
     <div class="align_center">
         <a type="button" class="btn btn-success" href="/export_reports">Экспорт в Excel</a>
@@ -96,6 +101,7 @@
             <div class="col-lg-12 col-md-8 col-sm-6">
                 <table align="center" class="table table-hover">
                     <tr>
+                        <th>№</th>
                         <th>Ученик</th>
                         <th>Наставник</th>
                         <th>Направление мероприятия</th>
@@ -104,9 +110,11 @@
                         <th>Статус</th>
                         <th>Дата</th>
                         <th>Результат</th>
+                        <th>Фото</th>
                     </tr>
                     {% for report in all_reports.keys() %}
                         <tr>
+                            <td>{{ loop.index }}</td>
                             <td>{{ all_reports[report][0] }}</td>
                             <td>{{ all_reports[report][1] }}</td>
                             <td>{{ all_reports[report][2] }}</td>
@@ -115,6 +123,11 @@
                             <td>{{ all_reports[report][5] }}</td>
                             <td>{{ all_reports[report][6] }}</td>
                             <td>{{ all_reports[report][7] }}</td>
+                            {% if all_reports[report][8]%}
+                                <td><a class="btn btn-sm btn-light" href="/photo/{{report}}" target="_blank">Посмотреть</a></td>
+                            {%else%}
+                                <td><a class="btn btn-sm btn-secondary" href="#Сделаааать">Добавить</a></td>
+                            {%endif%}
                         </tr>
                     {% endfor %}
                 </table>

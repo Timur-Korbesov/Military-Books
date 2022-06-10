@@ -1,55 +1,40 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3 align="center">Форма добавления результатов события</h3>
-<form action="" method="post" enctype="multipart/form-data">
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.stage.label(class="form-label") }}<br>
-        {{ form.stage(class="form-control") }}<br>
-        {% for error in form.stage.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.FIO.label }}<br>
-        {{ form.FIO(class="form-control") }}<br>
-        {% for error in form.FIO.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.achievement.label }}<br>
-        {{ form.achievement(class="form-control") }}<br>
-        {% for error in form.achievement.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.FIO_employer.label }}<br>
-        {{ form.FIO_employer(class="form-control") }}<br>
-        {% for error in form.FIO_employer.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.achievement_photo.label(class="form-label") }}<br>
-        {{ form.achievement_photo(type="file") }}<br>
-        {% for error in form.achievement_photo.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-    {{message}}
-</form>
+    <h3 align="center" class="mb-5">Просмотр результата для мероприятия - {{event.Name_of_event}}</h3>
+    <a class="btn btn-warning add-event btn-lg mb-5" href="/add_results/{{event_id}}">Добавить новый результат</a>
+    <div class="table-responsive">
+        <table align="center" class="table table-hover">
+            <tr align="center">
+                <th>№</th>
+                <th>Этап мероприятия</th>
+                <th>Участник</th>
+                <th>Наставник</th>
+                <th>Достижение</th>
+                <th>Фото</th>
+                <th>Редактирование</th>
+            </tr>
+            {% set num = namespace(a=1)%}
+            {% for res_st in res_stages %}
+                {% for res in res_st[1] %}
+                    <tr align="center">
+                        <td>{{ num.a }}</td>
+                        <td>{{ res_st[0].Stage }}</td>
+                        <td>{{ res[0].FIO }}</td>
+                        <td>{{ res[1].FIO }}</td>
+                        <td>{{ res[2].Achievement }}</td>
+
+                        {% if res[3] %}
+                            <td><a class="btn btn-sm btn-light" href="/photo/{{res[4]}}" target="_blank">Посмотреть</a></td>
+                        {%else%}
+                            <td><a class="btn btn-sm btn-secondary" href="/add_photo/{{event_id}}/{{res[4]}}">Добавить</a></td>
+                        {%endif%}
+                            <td><a href="/redact_results/{{event_id}}/{{res[4]}}" class="btn btn-light">Редактировать результат для этапа</a></td>
+                    </tr>
+                    {% set num.a = num.a + 1 %}
+                {% endfor %}
+            {% endfor %}
+
+        </table>
+    </div>
 {% endblock %}

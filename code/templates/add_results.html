@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3 align="center">Форма {{edit_or_add}} результатов мероприятия - {{event}}</h3>
+<form action="" method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <div class="row">
+        <div class="col-12">
+            {{ form.stage.label(class="form-label") }}<br>
+            {{ form.stage(class="form-control") }}<br>
+            {% for error in form.stage.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+            </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            {{ form.FIO.label }}<br>
+            {{ form.FIO(class="form-control") }}<br>
+            {% for error in form.FIO.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-9 col-md-8 col-sm-6">
+            {{ form.achievement.label }}<br>
+            {{ form.achievement(class="form-control") }}<br>
+            {% for error in form.achievement.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6">
+             <br>
+            <a class="btn btn-secondary btn-input btn-sm" href="/add_achievement">Добавить новое достижение</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            {{ form.FIO_employer.label }}<br>
+            {{ form.FIO_employer(class="form-control") }}<br>
+            {% for error in form.FIO_employer.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <p class="form-label">{{file_label}}</p>
+            {{ form.achievement_photo(type="file", class="form-control") }}<br>
+            {% for error in form.achievement_photo.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+        </div>
+    </div>
+    {{message}}
+</form>
+{% endblock %}

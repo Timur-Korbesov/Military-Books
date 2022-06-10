@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3 align="center">Добавление фотографии достижения для этапа - {{stage}}, мероприятия - {{event.Name_of_event}}</h3>
+<form action="" method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.achievement_photo.label(class="form-label") }}<br>
+        {{ form.achievement_photo(class="form-control", type="file") }}
+        {% for error in form.achievement_photo.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {{message}}
+</form>
+{% endblock %}

@@ -43,13 +43,13 @@ if Results_stages_id:
 
 
 class EventForm(FlaskForm):
-    event = SelectField('Событие', validators=[DataRequired()], coerce=int,
+    event = SelectField('Мероприятие', validators=[DataRequired()], coerce=int,
                         choices=[(event[0], event[1]) for event in Results_event])
-    submit = SubmitField('Подтвердить событие')
+    submit = SubmitField('Подтвердить')
 
 
 class ResultsForm(FlaskForm):
-    stage = SelectField('Этап события', validators=[DataRequired()], coerce=int,
+    stage = SelectField('Этап мероприятия', validators=[DataRequired()], coerce=int,
                         choices=[(stage[0], stage[1]) for stage in Results_stages], )
     FIO = SelectField('ФИО ученика', validators=[DataRequired()], coerce=int,
                       choices=[(student[0], student[1]) for student in Results_student])
@@ -58,4 +58,14 @@ class ResultsForm(FlaskForm):
     FIO_employer = SelectField('Наставник', validators=[DataRequired()], coerce=int,
                                choices=[(employer[0], employer[1]) for employer in Results_employer])
     achievement_photo = FileField('Электронный вид достижения')
-    submit = SubmitField('Добавить результат')
+    submit = SubmitField('Подтвердить')
+
+
+class AddAchievement(FlaskForm):
+    name_of_achievement = StringField('Название достижения', validators=[DataRequired()])
+    submit = SubmitField('Подтвердить')
+
+
+class AddPhoto(FlaskForm):
+    achievement_photo = FileField('Электронный вид достижения')
+    submit = SubmitField('Подтвердить')

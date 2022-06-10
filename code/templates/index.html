@@ -1,30 +1,32 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="carousel slide mb-5" id="carouselControls" data-bs-ride="carousel">
-    <div class="carousel-inner" style="background-color: #FFFACD">
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        {% if events_actually %}
-            <div class="carousel-item active">
-                <a href="event_more/{{ events_actually[0].id }}">
-                    <h2 align="center">{{ events_actually[0].Name_of_event }} </h2>
-                    <p align="center">{{ events_actually[0].Note }}</p>
-                </a>
-            </div>
+<div class="carousel slide mb-5 background-carousel" id="carouselControls" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        {% if events_actually%}
             {% for event in events_actually %}
-                <div class="carousel-item">
-                    <a href="event_more/{{ event.id }}">
-                        <h2 align="center">{{ event.Name_of_event }}</h2>
-                        <p align="center">{{ event.Note }}</p>
-                    </a>
-                </div>
+                {% if loop.first == 1 %}
+                    <div class="{{ styles[0] }}">
+                {% else %}
+                    <div class="{{ styles[1] }}">
+                {% endif %}
+                        <div class="{{ styles[2] }}">
+                            {% if event[1] %}
+                            <a href="event_more/{{ event[0].id }}" class="a-none-decoration">
+                                <img src="../{{event[1]}}" class="img-carousel">
+                            </a>
+                            {% endif %}
+                            </div>
+                        <div class="{{ styles[3] }}">
+                            <a href="event_more/{{ event[0].id }}" class="a-none-decoration">
+                                <h2 class="carousel-h2">{{ event[0].Name_of_event }}</h2>
+                                <p class="carousel-p">{{ event[0].Description }}</p>
+                            </a>
+                        </div>
+                    </div>
             {% endfor %}
         {% else %}
-            <div class="carousel-item active">
+            <div class="{{ styles[4] }}">
                 <h2> Актуальных мероприятий нет </h2>
             </div>
         {% endif %}
@@ -35,55 +37,5 @@
     <a class="carousel-control-next" role="button" href="#carouselControls" data-bs-slide="next">
         <span class="carousel-control-next-icon"></span>
     </a>
-</div>
-
-<a href="/add_event" class="btn btn-warning add-event btn-lg mb-3">
-    Добавить событие
-</a>
-<div class="table-responsive">
-    <table align="center" class="table table-hover">
-        <tr align="center">
-            <th>№</th>
-            <th>Название</th>
-            <th>Организатор</th>
-            <th>Сайт</th>
-            <th>Форма проведения</th>
-            <th>Статус</th>
-            <th>Направление</th>
-            <th>Возрастные ограничения</th>
-            <th>Класс</th>
-            <th>Примерное количество участников</th>
-            <th>Примечания</th>
-        </tr>
-        {% for event in events %}
-            <tr align="center">
-                <td>{{ event.id }}</td>
-                <td>{{ event.Name_of_event }} <a href="event_more/{{ event.id }}"> (подробнее)</a></td>
-                <td>{{ event.Organizer }}</td>
-                <td><a href="{{ event.Website }}" target="_blank">{{ event.Website }}</a></td>
-                {% for form_hold in form_of_hold %}
-                    {% if form_hold.id == event.Form_of_holding %}
-                        <td class="form_of_holding">{{ form_hold.Form }}</td>
-                    {% endif %}
-                {% endfor %}
-
-                {% for stat in status %}
-                    {% if stat.id == event.Status %}
-                        <td>{{ stat.Status_name }}</td>
-                    {% endif %}
-                {% endfor %}
-                {% for direction in direct %}
-                    {% if direction.id == event.Direction %}
-                        <td>{{ direction.Direction }}</td>
-                    {% endif %}
-                {% endfor %}
-
-                <td>{{ event.Age }}</td>
-                <td>{{ event.Class }}</td>
-                <td>{{ event.Number_of_participants }}</td>
-                <td>{{ event.Note }}</td>
-            </tr>
-        {% endfor %}
-    </table>
 </div>
 {% endblock %}

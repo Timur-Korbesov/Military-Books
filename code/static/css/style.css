@@ -2,37 +2,135 @@ html,
 body {
   height: 100%;
 }
+
 .btn-input {
     font-size: 18px;
 }
+
 .nav-item:not(.btn_not) {
     font-size: 18px;
 }
+
 .navbar-brand img {
     min-height: 62px;
     min-width: 200px;
 }
+
 main {
     margin-top: 30px;
     margin-bottom: 100px;
 }
+
 .form_of_holding {
     margin-right: 10px;
 }
+
 .add-event {
     display: flex;
     justify-content: center;
 }
-.align_center {
-    text-align: center;
+
+.carousel-item {
+    height: 800px;
 }
+
+.img-carousel {
+    width: 480px;
+    height: auto;
+    margin-top: 80px;
+}
+
+.a-none-decoration {
+    text-decoration: none;
+    color: white;
+}
+
+.a-none-decoration:hover {
+    color: rgba(255,255,255,0.9);
+}
+
+.img-event {
+    width: 580px;
+    height: auto;
+}
+
 .text-event {
     font-size: 20px;
     margin-left: 40px;
-    margin-top: 50px;
     line-height: 2;
-    padding-right: 140px;
 }
+
+@media (max-width: 800px) {
+    .img-carousel {
+        width: 320px;
+        height: auto;
+        margin-top: 70px;
+    }
+
+    .carousel-item {
+        height: 630px;
+    }
+
+    .carousel-h2 {
+        font-size: 17px;
+    }
+
+    .carousel-p {
+        font-size: 12px;
+    }
+
+    .img-event {
+        width: 480px;
+        height: auto;
+    }
+
+    .text-event {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 470px) {
+    .img-carousel {
+        width: 230px;
+        height: auto;
+        margin-top: 60px;
+    }
+
+    .carousel-item {
+        height: 530px;
+    }
+
+    .footer-logo {
+        width: 50px;
+    }
+
+        .carousel-h2 {
+        font-size: 15px;
+    }
+
+    .carousel-p {
+        font-size: 10px;
+    }
+
+    .img-event {
+        width: 300px;
+        height: auto;
+    }
+
+    .text-event {
+        font-size: 16px;
+    }
+}
+
+.background-carousel {
+    background: url(../img/fon-carousel.jpg);
+    background-position: -800px -340px;
+}
+
+.align_center {
+    text-align: center;
+}
+
 .table-responsive-stages {
     font-size: 20px;
     margin-left: 40px;
@@ -40,12 +138,10 @@ main {
     padding-right: 140px;
     padding-bottom: 30px;
 }
+
 .add-stage {
     display: flex;
     justify-content: center;
     margin-left: 40px;
     margin-right: 100px;
-}
-.carousel-item {
-    height: 500px;
 }

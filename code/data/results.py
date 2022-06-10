@@ -24,7 +24,7 @@ class Results(SqlAlchemyBase, UserMixin, SerializerMixin):
                                    sqlalchemy.ForeignKey("Students.id"))
     Id_achievement = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Achievement.id"), nullable=True)
     Id_employer = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Employees.id"), nullable=True)
-    Diploms = sqlalchemy.Column(sqlalchemy.BLOB, nullable=True)
+    Diploms = sqlalchemy.Column(sqlalchemy.BLOB)
 
     stage_events = orm.relation("Stages_Events")
     student = orm.relation("Students")

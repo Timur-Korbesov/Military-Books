@@ -2,27 +2,32 @@
 
 {% block content %}
 <h3 align="center">{{ event.Name_of_event }}</h3>
-<div class="text-event">
-    <p>Организатор - {{ event.Organizer }}</p>
-    <p>{{ event.Description }}</p>
-    <p>Сайт - <a href="{{ event.Website }}" target="_blank">{{ event.Website }}</a></p>
-    <p>Ссылка на положение - <a href="{{ event.Link_to_position }}" target="_blank">Положение</a></p>
-    <p>Ссылка на регистрацию - <a href="{{ event.Link_to_regestration }}" target="_blank">Регистрация</a></p>
-    <p class="form_of_holding">Форма проведения - {{ form_hold.Form }}</p>
-    <p>Статус - {{ status.Status_name }}</p>
-    <p>Направление - {{ direction.Direction }}</p>
-    <p>Наставники -
-        {% for employer in employees %}
-                {{ employer }}
-        {% endfor %}
-    </p>
-    <p>Возраст - {{ event.Age }}</p>
-    <p>Класс - {{ event.Class }}</p>
-    <p>Примерное количество участников - {{ event.Number_of_participants }}</p>
-    <p>Примечания - {{ event.Note }}</p>
-    <a href="/event/{{event.id}}" class="btn btn-info">
-    Редактировать событие
-    </a>
+<div class="row mt-4">
+    <div class="col text-event mt-5">
+        <p>Организатор - {{ event.Organizer }}</p>
+        <p>{{ event.Description }}</p>
+        <p>Сайт - <a href="{{ event.Website }}" target="_blank">{{ event.Website }}</a></p>
+        <p>Ссылка на положение - <a href="{{ event.Link_to_position }}" target="_blank">Положение</a></p>
+        <p>Ссылка на регистрацию - <a href="{{ event.Link_to_regestration }}" target="_blank">Регистрация</a></p>
+        <p class="form_of_holding">Форма проведения - {{ form_hold.Form }}</p>
+        <p>Статус - {{ status.Status_name }}</p>
+        <p>Направление - {{ direction.Direction }}</p>
+        <p>Наставники -
+            {% for employer in employees %}
+                    {{ employer }}
+            {% endfor %}
+        </p>
+        <p>Возраст - {{ event.Age }}</p>
+        <p>Класс - {{ event.Class }}</p>
+        <p>Примерное количество участников - {{ event.Number_of_participants }}</p>
+        <p>Примечания - {{ event.Note }}</p>
+        <a href="/event/{{event.id}}" class="btn btn-info">
+        Редактировать мероприятие
+        </a>
+    </div>
+    <div class="col-4 mt-5 col">
+        <img src="../{{ path }}" alt="Фотография мероприятия" class="img-event">
+    </div>
 </div>
 <h3 class="text-center">Этапы</h3>
 <div class="table-responsive table-responsive-stages">
@@ -38,12 +43,12 @@
                 <td>{{ stage.Stage }}</td>
                 <td>{{ stage.Date_begin }}</td>
                 <td>{{ stage.Date_end }}</td>
-                <td><a href="/stage/{{stage.id}}" class="btn btn-light">Редактировать этап для события</a></td>
+                <td><a href="/stage/{{stage.id}}" class="btn btn-light">Редактировать этап для мероприятия</a></td>
             </tr>
         {% endfor %}
     </table>
 </div>
 <a href="/add_event_stage/{{event.id}}" class="btn btn-info add-stage">
-    Добавить этап для события
+    Добавить этап для мероприятия
 </a>
 {% endblock %}

@@ -3,26 +3,34 @@
 {% block content %}
 <h3 align="center">Форма добавления направления для ученика - {{student.FIO}}</h3>
 <form action="" method="post" enctype="multipart/form-data">
-    <p>
-        {{ form.hidden_tag() }}<br>
-        {{ form.Direction.label }}<br>
-        {{ form.Direction(class="form-control", type="name") }}<br>
-        {% for error in form.Direction.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.Date_of_admission.label }}<br>
-        {{ form.Date_of_admission(class="form-control") }}<br>
-        {% for error in form.Date_of_admission.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-    <p>
+    <div class="row">
+        <div class="col-lg-9 col-md-8 col-sm-6">
+            {{ form.Direction.label }}<br>
+            {{ form.Direction(class="form-control") }}<br>
+            {% for error in form.Direction.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+                {% endfor %}
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <br>
+            <a class="btn btn-secondary btn-input btn-sm" href="/add_direction/stud/{{student.id}}">Добавить новое направление</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            {{ form.Date_of_admission.label }}<br>
+            {{ form.Date_of_admission(class="form-control") }}<br>
+            {% for error in form.Date_of_admission.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
         {{ form.Date_of_deductions.label }}<br>
         {{ form.Date_of_deductions(class="form-control") }}<br>
         {% for error in form.Date_of_deductions.errors %}
@@ -30,8 +38,10 @@
                 {{ error }}
             </p>
         {% endfor %}
-    </p>
-    <p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
         {{ form.Id_employer.label }}<br>
         {{ form.Id_employer(class="form-control", type="name") }}<br>
         {% for error in form.Id_employer.errors %}
@@ -39,8 +49,13 @@
                 {{ error }}
             </p>
         {% endfor %}
-    </p>
+        </div>
+    </div>
     <br>
-    {{ form.submit(type="submit", class="btn btn-primary") }}
+    <div class="row">
+        <div class="col-12">
+            {{ form.submit(type="submit", class="btn btn-primary") }}
+        </div>
+    </div>
 </form>
 {% endblock %}

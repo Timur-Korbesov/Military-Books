@@ -21,7 +21,7 @@
         </tr>
         {% for employ in all_employees.keys() %}
             <tr>
-                <td>{{ employ }}</td>
+                <td>{{ loop.index }}</td>
                 <td>{{ all_employees[employ][0] }}</td>
                 <td>{{ all_employees[employ][1] }}</td>
                 <td>{{ all_employees[employ][3] }}</td>

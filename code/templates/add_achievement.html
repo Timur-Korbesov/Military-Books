@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3 align="center" xmlns="http://www.w3.org/1999/html">Форма добавления достижения</h3>
+<form action="" method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <div class="row">
+        <div class="col-12">
+            {{ form.name_of_achievement.label }}<br>
+            {{ form.name_of_achievement(class="form-control") }}<br>
+            {% for error in form.name_of_achievement.errors %}
+                <p class="alert alert-danger" role="alert">
+                    {{ error.label }}
+                </p>
+            {% endfor %}
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-12">
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+        </div>
+    </div>
+    {{message}}
+</form>
+{% endblock %}
