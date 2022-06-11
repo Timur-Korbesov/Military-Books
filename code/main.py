@@ -166,6 +166,7 @@ def index():
 
 # Все мероприятия
 @app.route("/events")
+@login_required
 def events():
     db_sess = db_session.create_session()
     even = db_sess.query(Event).all()
@@ -254,7 +255,7 @@ def add_event():
         )
         db_sess.add(partic_empl)
         db_sess.commit()
-        ev = db_sess.query(Event).filter(Event.Name_of_event == event.Name_of_event).first()
+        ev = db_sess.query(Event).filter(Event.Name_of_event == ev.Name_of_event).first()
         return redirect(f'/event_more/{ev.id}')
     return render_template('event.html', title='Добавление мероприятия', photo='Фото мероприятия',
                            name='добавления', form=form)
@@ -435,6 +436,7 @@ def stage(id):
 
 # Вкладка с получением id выбранного мероприятия для показа результатов
 @app.route('/results_event', methods=['GET', 'POST'])
+@login_required
 def results_event():
     form_event = EventForm()
     con = sqlite3.connect('./db/it-cube-data.db')
@@ -450,6 +452,7 @@ def results_event():
 
 # Результаты
 @app.route('/results/<int:id>', methods=['GET', 'POST'])
+@login_required
 def results(id):
     db_sess = db_session.create_session()
     ev = db_sess.query(Event).filter(id == Event.id).first()
@@ -517,7 +520,7 @@ def add_results(id):
         return redirect(f'/results/{id}')
     return render_template('add_results.html', title='Добавление результата',
                            edit_or_add='добавления', form=form_result, event=ev,
-                           file_label='Выбрать файл достижения')
+                           file_label='Выбрать файл достижения', redact=False, stage=None)
 
 
 # Редактирование результата
@@ -529,15 +532,10 @@ def redact_results(id_event, id_result):
     res = db_sess.query(Results).filter(Results.id == id_result).first()
     st_ev = db_sess.query(Stages_Events).filter(Stages_Events.id == res.Id_stage_event).first()
     ev = db_sess.query(Event).filter(Event.id == id_event).first()
+    st = None
     if request.method == "GET":
         st = db_sess.query(Stages).filter(Stages.id == st_ev.Id_stage).first()
         if res:
-            stages = [[st.id, st.Stage]]
-            for st_id in db_sess.query(Stages_Events).filter(Stages_Events.Id_event == id_event).all():
-                s = db_sess.query(Stages).filter(Stages.id == st_id.Id_stage).first()
-                if s not in stages:
-                    stages.append([s.id, s.Stage])
-            form.stage.choices = stages
             stud = [0]
             for stude in db_sess.query(Students).all():
                 if stude.id == res.Id_student:
@@ -561,7 +559,7 @@ def redact_results(id_event, id_result):
             form.FIO_employer.choices = empls
         else:
             abort(404)
-    if form.validate_on_submit():
+    if form.is_submitted():
         if res:
             f = request.files['achievement_photo']
             blob_data = download_photo(f)
@@ -579,7 +577,7 @@ def redact_results(id_event, id_result):
             abort(404)
     return render_template('add_results.html',
                            title='Редактирование результата', event=ev.Name_of_event,
-                           form=form, edit_or_add='редактирования',
+                           form=form, edit_or_add='редактирования', redact=True, stage=st,
                            file_label='Выбрать другой файл достижения'
                            )
 
@@ -603,6 +601,7 @@ def add_achievement():
 
 # Отчёты
 @app.route('/reports', methods=['GET', 'POST'])
+@login_required
 def reports():
     form = FiltersForm()
     db_sess = db_session.create_session()
@@ -632,7 +631,8 @@ def reports():
             id_event_stage = db_sess.query(Stages_Events).filter(Stages_Events.id == res.Id_stage_event).first()
             ev = db_sess.query(Event).filter(Event.id == id_event_stage.Id_event).first()
             if (event_id != -1 and ev.id != event_id) or (
-                    direction_id != -1 and ev.Direction != direction_id) or (status_id != -1 and status_id != ev.Status):
+                    direction_id != -1 and ev.Direction != direction_id) or (
+                    status_id != -1 and status_id != ev.Status):
                 continue
             stagee = db_sess.query(Stages).filter(Stages.id == id_event_stage.Id_stage).first()
 
@@ -685,6 +685,7 @@ def reports():
 
 # Показ учеников
 @app.route('/students')
+@login_required
 def students():
     db_sess = db_session.create_session()
 
@@ -698,6 +699,7 @@ def students():
 
 # Подробности об ученике
 @app.route('/more_student/<int:id>')
+@login_required
 def more_students(id):
     db_sess = db_session.create_session()
     stude = db_sess.query(Students).filter(Students.id == id).first()
@@ -790,8 +792,8 @@ def add_studies_it_cube(id):
     update_studies_cube(form.Direction, form.Id_employer)
     db_sess = db_session.create_session()
     stud = db_sess.query(Students).filter(Students.id == id).first()
-    if form.validate_on_submit():
-        stud = Studies_it_cube(
+    if form.is_submitted():
+        stud_cube = Studies_it_cube(
             Direction=form.Direction.data,
             Date_of_admission=form.Date_of_admission.data,
             Date_of_deductions=form.Date_of_deductions.data,
@@ -799,7 +801,7 @@ def add_studies_it_cube(id):
             Id_student=stud.id
 
         )
-        db_sess.add(stud)
+        db_sess.add(stud_cube)
         db_sess.commit()
         return redirect(f'/more_student/{id}')
     return render_template('add_studies_it_cube.html', title='Добавление направления',
@@ -859,9 +861,9 @@ def studies_it_cube(id):
 def employees():
     db_sess = db_session.create_session()
     res_dict = {}
-    for empl in db_sess.query(Employees).all():
+    for num, empl in enumerate(db_sess.query(Employees).all()):
         status = db_sess.query(StatusEmployer).filter(StatusEmployer.id == empl.Status).first()
-        res_dict[empl.id] = [empl.FIO, empl.Email, empl.Hashed_password, empl.Date_of_birth,
+        res_dict[num + 1] = [empl.FIO, empl.Email, empl.Hashed_password, empl.Date_of_birth,
                              empl.Place_of_residence, empl.Number_phone, empl.Gender, status.Role,
                              empl.Note]
     return render_template('employees.html', title='Сотрудники',
@@ -902,6 +904,81 @@ def add_photo(id_event, id_result):
 
 
 # Экспорты в xml
+@app.route('/export_events')
+def export_events():
+    list1 = []
+    list2 = []
+    list3 = []
+    list4 = []
+    list5 = []
+    list6 = []
+    list7 = []
+    list8 = []
+    list9 = []
+    list10 = []
+    list11 = []
+    list12 = []
+    list13 = []
+    list14 = []
+    list15 = []
+
+    col1 = "№"
+    col2 = "Название мероприятия"
+    col3 = "Организатор"
+    col4 = "Описание"
+    col5 = "Сайт"
+    col6 = "Ссылка на положение"
+    col7 = "Ссылка на регистрацию"
+    col8 = "Форма проведения"
+    col9 = "Статус"
+    col10 = "Направление"
+    col11 = "Наставник"
+    col12 = "Возрастные ограничения"
+    col13 = "Промежуток классов"
+    col14 = "Примерное количество участнков"
+    col15 = "Примечания"
+
+    db_sess = db_session.create_session()
+    for num, ev in enumerate(db_sess.query(Event).all()):
+        f_of_h = db_sess.query(Form_of_Holding).filter(Form_of_Holding.id == ev.Form_of_holding).first()
+
+        status = db_sess.query(Status).filter(Status.id == ev.Status).first()
+
+        direct = db_sess.query(Directions).filter(Directions.id == ev.Direction).first()
+
+        empl_id = db_sess.query(Participation_employees).filter(
+            Participation_employees.Id_event == ev.id).first().Id_employer
+        empl = db_sess.query(Employees).filter(Employees.id == empl_id).first()
+
+        list1.append(num + 1)
+        list2.append(ev.Name_of_event)
+        list3.append(ev.Organizer)
+        list4.append(ev.Description)
+        list5.append(ev.Website)
+        list6.append(ev.Link_to_position)
+        list7.append(ev.Link_to_regestration)
+        list8.append(f_of_h.Form)
+        list9.append(status.Status_name)
+        list10.append(direct.Direction)
+        list11.append(empl.FIO)
+        list12.append(ev.Age)
+        list13.append(ev.Class)
+        list14.append(ev.Number_of_participants)
+        list15.append(ev.Note)
+
+    data = pd.DataFrame(
+        {col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8,
+         col9: list9, col10: list10, col11: list11, col12: list12, col13: list13, col14: list14, col15: list15})
+
+    num = 0
+    while True:
+        if not (os.path.exists(f'all_exports/events{num}.xlsx')):
+            data.to_excel(f'all_exports/events{num}.xlsx', sheet_name='sheet1', index=False)
+            return redirect('events')
+        else:
+            num += 1
+
+
 @app.route('/export_students')
 def export_students():
     list1 = []
@@ -930,13 +1007,8 @@ def export_students():
 
     db_sess = db_session.create_session()
 
-    res_dict = {}
-    for stud in db_sess.query(Students).all():
-        res_dict[stud.id] = [stud.FIO, stud.Date_of_birth, stud.Class, stud.Сertificate_DO, stud.Place_of_residence,
-                             stud.School, stud.Number_phone_student, stud.Number_phone_parent,
-                             stud.Gender, stud.Note]
-
-        list1.append(stud.id)
+    for num, stud in enumerate(db_sess.query(Students).all()):
+        list1.append(num + 1)
         list2.append(stud.FIO)
         list3.append(stud.Date_of_birth)
         list4.append(stud.Class)
@@ -952,9 +1024,13 @@ def export_students():
         {col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8,
          col9: list9, col10: list10, col11: list11})
 
-    data.to_excel('all_exports/students.xlsx', sheet_name='sheet1', index=False)
-
-    return render_template('students.html', all_students=res_dict)
+    num = 0
+    while True:
+        if not (os.path.exists(f'all_exports/students{num}.xlsx')):
+            data.to_excel(f'all_exports/students{num}.xlsx', sheet_name='sheet1', index=False)
+            return redirect('students')
+        else:
+            num += 1
 
 
 @app.route('/export_employees')
@@ -978,14 +1054,10 @@ def export_employees():
     col8 = "Примечание"
 
     db_sess = db_session.create_session()
-    res_dict = {}
-    for empl in db_sess.query(Employees).all():
+    for num, empl in enumerate(db_sess.query(Employees).all()):
         status = db_sess.query(StatusEmployer).filter(StatusEmployer.id == empl.Status).first()
-        res_dict[empl.id] = [empl.FIO, empl.Email, empl.Hashed_password, empl.Date_of_birth,
-                             empl.Place_of_residence, empl.Number_phone, empl.Gender, status.Role,
-                             empl.Note]
 
-        list1.append(empl.id)
+        list1.append(num + 1)
         list2.append(empl.FIO)
         list3.append(empl.Date_of_birth)
         list4.append(empl.Place_of_residence)
@@ -997,9 +1069,13 @@ def export_employees():
     data = pd.DataFrame(
         {col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8})
 
-    data.to_excel('all_exports/employees.xlsx', sheet_name='sheet1', index=False)
-
-    return render_template('employees.html', all_employees=res_dict)
+    num = 0
+    while True:
+        if not (os.path.exists(f'all_exports/employees{num}.xlsx')):
+            data.to_excel(f'all_exports/employees{num}.xlsx', sheet_name='sheet1', index=False)
+            return redirect('employees')
+        else:
+            num += 1
 
 
 @app.route('/export_reports')
@@ -1031,23 +1107,22 @@ def export_reports():
 
         employeer = db_sess.query(Employees).filter(Employees.id == res.Id_employer).first().FIO
 
-        id_event = db_sess.query(Stages_Events).filter(Stages_Events.id == res.Id_stage_event).first().Id_event
-        ev_ = db_sess.query(Event).filter(Event.id == id_event).first()
+        id_st_event = db_sess.query(Stages_Events).filter(Stages_Events.id == res.Id_stage_event).first()
+        ev_ = db_sess.query(Event).filter(Event.id == id_st_event.Id_event).first()
         ev = ev_.Name_of_event
 
         direction = db_sess.query(Directions).filter(Directions.id == ev_.Direction).first().Direction
 
-        id_stage = db_sess.query(Stages_Events).filter(Stages_Events.Id_event == id_event).first().Id_stage
-        stage_ = db_sess.query(Stages).filter(Stages.id == id_stage).first()
+        stage_ = db_sess.query(Stages).filter(Stages.id == id_st_event.Id_stage).first()
         dat = stage_.Date_end
         stag = stage_.Stage
 
-        status_id = db_sess.query(Event).filter(Event.id == id_event).first().Status
+        status_id = ev_.Status
         status = db_sess.query(Status).filter(Status.id == status_id).first().Status_name
 
         achiev = db_sess.query(Achievement).filter(Achievement.id == res.Id_achievement).first().Achievement
 
-        list1.append(num+1)
+        list1.append(num + 1)
         list2.append(stud)
         list3.append(employeer)
         list4.append(direction)
@@ -1057,8 +1132,11 @@ def export_reports():
         list8.append(dat)
         list9.append(achiev)
 
+    print(list6)
+    print(list8)
     data = pd.DataFrame(
-        {col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8, col9: list9})
+        {col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8,
+         col9: list9})
     num = 0
     while True:
         if not (os.path.exists(f'all_exports/reports{num}.xlsx')):

@@ -1,20 +1,26 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3 align="center">Форма {{edit_or_add}} результатов мероприятия - {{event}}</h3>
+{% if redact %}
+    <h3 align="center">Форма {{edit_or_add}} результатов мероприятия - {{event}}, этапа - {{ stage.Stage }}</h3>
+{% else %}
+    <h3 align="center">Форма {{edit_or_add}} результатов мероприятия - {{event}}</h3>
+{% endif %}
 <form action="" method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
-    <div class="row">
-        <div class="col-12">
-            {{ form.stage.label(class="form-label") }}<br>
-            {{ form.stage(class="form-control") }}<br>
-            {% for error in form.stage.errors %}
-                <p class="alert alert-danger" role="alert">
-                    {{ error }}
-                </p>
-            {% endfor %}
-            </div>
-    </div>
+    {% if not redact%}
+        <div class="row">
+            <div class="col-12">
+                {{ form.stage.label(class="form-label") }}<br>
+                {{ form.stage(class="form-control") }}<br>
+                {% for error in form.stage.errors %}
+                    <p class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+                </div>
+        </div>
+    {% endif %}
     <div class="row">
         <div class="col-12">
             {{ form.FIO.label }}<br>

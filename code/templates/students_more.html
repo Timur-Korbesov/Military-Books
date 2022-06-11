@@ -9,7 +9,6 @@
     <p>Школа - {{ student.School }}</p>
     <p>Пол - {{ student.Gender }}</p>
     <p>Класс обучения - {{ student.Class }}</p>
-    <p>Примечания - {{ student.Note }}</p>
     <p>Номер телефона ученика - {{ student.Number_phone_student }}</p>
     <p>Номер телефона родителя - {{ student.Number_phone_parent }}</p>
     {% if student.Note %}
@@ -40,7 +39,7 @@
         {% endfor %}
     </table>
 </div>
-<a href="/add_studies_it_cube/{{student.id}}" class="btn btn-info add-stage">
+<a href="/add_studies_it_cube/{{ student.id }}" class="btn btn-info add-stage">
     Добавить направление для ученика
 </a>
 {% endblock %}
