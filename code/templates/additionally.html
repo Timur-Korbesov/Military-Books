@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="row mb-5">
+        <div class="col">
+            <h3 class="mb-4" align="center">Направления</h3>
+            <div class="align_center mb-4">
+                <a type="button" class="btn btn-md btn-warning" href="/add_direction">Добавить направление</a>
+            </div>
+            <table align="center" class="table table-hover" style="font-size: 14px;">
+                <tr>
+                    <th>№</th>
+                    <th>Направление</th>
+                </tr>
+                {% for direct in directions %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ direct.Direction }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="col">
+            <h3 class="mb-4" align="center">Достижения</h3>
+            <div class="align_center mb-4">
+                <a type="button" class="btn btn-md btn-warning" href="/add_achievement">Добавить достижение</a>
+            </div>
+            <table align="center" class="table table-hover" style="font-size: 14px;">
+                <tr>
+                    <th>№</th>
+                    <th>Достижение</th>
+                </tr>
+                {% for achievement in achievements %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ achievement.Achievement }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="row mb-5">
+        <div class="col">
+            <h3 class="mb-4" align="center">Формы проведения мероприятий</h3>
+            <div class="align_center mb-4">
+                <a type="button" class="btn btn-md btn-warning" href="/add_form_of_holding">Добавить форму проведения</a>
+            </div>
+            <table align="center" class="table table-hover" style="font-size: 14px;">
+                <tr>
+                    <th>№</th>
+                    <th>Форма проведения</th>
+                </tr>
+                {% for form_of_holding in forms_hold %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ form_of_holding.Form }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="col">
+            <h3 class="mb-4" align="center">Статусы мероприятий</h3>
+            <div class="align_center mb-4">
+                <a type="button" class="btn btn-md btn-warning" href="/add_status">Добавить статус</a>
+            </div>
+            <table align="center" class="table table-hover" style="font-size: 14px;">
+                <tr>
+                    <th>№</th>
+                    <th>Статус</th>
+                </tr>
+                {% for status in statuses %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ status.Status_name }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="row mb-5">
+        <div class="col">
+            <h3 class="mb-4" align="center">Школы</h3>
+            <div class="align_center mb-4">
+                <a type="button" class="btn btn-md btn-warning" href="/add_school">Добавить новую школу</a>
+            </div>
+            <table align="center" class="table table-hover">
+                <tr>
+                    <th>№</th>
+                    <th>Школа</th>
+                </tr>
+                {% for school in schools %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ school.School }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}

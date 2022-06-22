@@ -68,3 +68,13 @@ class AddStageForm(FlaskForm):
 class AddDirection(FlaskForm):
     direction = StringField('Название направления', validators=[DataRequired()])
     submit = SubmitField('Подтвердить')
+
+
+class AddFormOfHolding(FlaskForm):
+    form_of_hold = StringField('Форма проведения', validators=[DataRequired()])
+    submit = SubmitField('Подтвердить')
+
+
+class AddStatus(FlaskForm):
+    status = StringField('Статус мероприятия', validators=[DataRequired()])
+    submit = SubmitField('Подтвердить')

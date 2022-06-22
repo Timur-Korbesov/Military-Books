@@ -6,7 +6,8 @@
         <a type="button" class="btn btn-md btn-warning" href="/add_event">Добавить мероприятие</a>
     </div>
     <div class="align_center mb-5">
-        <a type="button" class="btn btn-success" href="/export_events">Экспорт в Excel</a>
+        <a type="button" class="btn btn-success mb-1" href="/export_events">Экспорт в Excel</a><br>
+        <p style="color: green; font-size: 21px;">{{message}}</p>
     </div>
     <div class="table-responsive">
         <table align="center" class="table table-hover">
@@ -26,7 +27,7 @@
             {% for event in events %}
                 <tr align="center">
                     <td>{{ loop.index }}</td>
-                    <td>{{ event.Name_of_event }} <a href="event_more/{{ event.id }}"> (подробнее)</a></td>
+                    <td>{{ event.Name_of_event }} <a href="../event_more/{{ event.id }}"> (подробнее)</a></td>
                     <td>{{ event.Organizer }}</td>
                     <td><a href="{{ event.Website }}" target="_blank">{{ event.Website }}</a></td>
                     {% for form_hold in form_of_hold %}

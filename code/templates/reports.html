@@ -86,14 +86,15 @@
                     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
                 </div>
                 <div class="col-2">
-                    <a type="button" class="btn btn-danger" href="/reports">Убрать все фильтры</a>
+                    <a type="button" class="btn btn-danger" href="/reports/0">Убрать все фильтры</a>
                 </div>
             </div>
         </form>
     </div>
     <h3 align="center" class="mb-3">Список отчётов</h3>
     <div class="align_center">
-        <a type="button" class="btn btn-success" href="/export_reports">Экспорт в Excel</a>
+        <a type="button" class="btn btn-success" href="/export_reports">Экспорт в Excel</a><br>
+        <p style="color: green; font-size: 21px;">{{message}}</p>
     </div>
     <br>
     <div class="row">

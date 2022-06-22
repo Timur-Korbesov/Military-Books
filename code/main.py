@@ -10,7 +10,7 @@ from flask_restful import abort
 from werkzeug.utils import redirect, secure_filename
 
 from data import db_session
-from data.students import Students, Studies_it_cube
+from data.students import Students, Studies_it_cube, Schools
 from data.employees import Employees, StatusEmployer
 from data.results import Results, Achievement
 from data.event import Event, Participation_employees, Form_of_Holding, Status
@@ -18,12 +18,16 @@ from data.direction import Directions
 from data.stages_event import Stages_Events, Stages
 from forms.user import RegisterForm, LoginForm
 from forms.result import ResultsForm, EventForm, AddAchievement, AddPhoto
-from forms.event import AddEventForm, AddStageForm, update_event, AddDirection
+from forms.event import AddEventForm, AddStageForm, update_event, AddDirection, AddFormOfHolding, AddStatus
 from forms.reports import FiltersForm, update_reports
 from forms import result
-from forms.students_forms import AddStudents, AddStudyItCube, update_studies_cube
+from forms.students_forms import AddStudents, AddStudyItCube, AddSchool, update_studies_cube, update_student
+from forms.student_filter import FiltersStudentsForm, update_filter
 
 from styles_py import styles_consts
+
+reports_export_dict = dict()
+students_export_dict = dict()
 
 consts = dict()
 consts['carousel'] = [styles_consts.carousel_block_active, styles_consts.carousel_block, styles_consts.carousel_img,
@@ -165,16 +169,19 @@ def index():
 
 
 # Все мероприятия
-@app.route("/events")
+@app.route("/events/<int:exp>")
 @login_required
-def events():
+def events(exp):
     db_sess = db_session.create_session()
     even = db_sess.query(Event).all()
     status = db_sess.query(Status).all()
     form_of_hold = db_sess.query(Form_of_Holding).all()
     direct = db_sess.query(Directions).all()
+    mess = ''
+    if exp:
+        mess = 'Успешно экспортировано'
     return render_template("events.html", title='Мероприятия', events=even, status=status,
-                           form_of_hold=form_of_hold, direct=direct)
+                           form_of_hold=form_of_hold, direct=direct, message=mess)
 
 
 # Подробности о мероприятии
@@ -323,6 +330,11 @@ def event(id):
             f = request.files['Photo']
             blob_data = None
             if secure_filename(f.filename):
+                for i in range(0, 30000):
+                    path_photo = 'static/img/photo_ev' + str(i) + '.jpeg'
+                    if os.path.exists(path_photo):
+                        os.remove(path_photo)
+                        break
                 path = 'static/img/' + secure_filename(f.filename)
                 f.save(path)
                 with open(path, 'rb') as file:
@@ -353,25 +365,6 @@ def event(id):
                            photo='Выбрать другое фото',
                            form=form
                            )
-
-
-# Добавление нового направления
-@app.route('/add_direction/<string:tp>/<int:page>', methods=['GET', 'POST'])
-@login_required
-def add_direction(tp, page):
-    form = AddDirection()
-    if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        direction = Directions(
-            Direction=form.direction.data
-        )
-        db_sess.add(direction)
-        db_sess.commit()
-        if tp == 'event':
-            return redirect('/add_event')
-        return redirect(f'/add_studies_it_cube/{page}')
-    return render_template('add_direction.html', title='Добавление направления',
-                           form=form)
 
 
 # Добавлнеие нового этапа для мероприятия
@@ -582,32 +575,18 @@ def redact_results(id_event, id_result):
                            )
 
 
-# Добавление нового вида достижения
-@app.route('/add_achievement', methods=['GET', 'POST'])
-@login_required
-def add_achievement():
-    form = AddAchievement()
-    if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        achievement = Achievement(
-            Achievement=form.name_of_achievement.data
-        )
-        db_sess.add(achievement)
-        db_sess.commit()
-        return redirect('/results_event')
-    return render_template('add_achievement.html', title='Добавление достижения',
-                           form=form)
-
-
 # Отчёты
-@app.route('/reports', methods=['GET', 'POST'])
+@app.route('/reports/<int:exp>', methods=['GET', 'POST'])
 @login_required
-def reports():
+def reports(exp):
+    global reports_export_dict
     form = FiltersForm()
     db_sess = db_session.create_session()
     res_dict = {}
     update_reports(form.student, form.employer, form.direction, form.event, form.status, form.achievement)
     if form.is_submitted():
+        exp = 0
+
         student_id = form.student.data
         employer_id = form.employer.data
         event_id = form.event.data
@@ -678,23 +657,81 @@ def reports():
             photoo = res.Diploms
             res_dict[res.id] = [stud, employeer, direction, ev.Name_of_event, st.Stage, status, date,
                                 achievement, photoo]
-
+    mess = ''
+    if exp:
+        mess = 'Успешно экспортировано'
+        res_dict = reports_export_dict
+    reports_export_dict = res_dict
     return render_template('reports.html', title='Отчёты',
-                           all_reports=res_dict, form=form)
+                           all_reports=res_dict, form=form, message=mess)
 
 
 # Показ учеников
-@app.route('/students')
+@app.route('/students/<int:exp>', methods=['GET', 'POST'])
 @login_required
-def students():
+def students(exp):
+    global students_export_dict
+    form = FiltersStudentsForm()
+    update_filter(form.school, form.employer, form.direction, form.class_1, form.class_2)
     db_sess = db_session.create_session()
-
     res_dict = {}
-    for stud in db_sess.query(Students).all():
-        res_dict[stud.id] = [stud.FIO, stud.Date_of_birth, stud.Class, stud.Сertificate_DO, stud.Place_of_residence,
-                             stud.School, stud.Number_phone_student, stud.Number_phone_parent,
-                             stud.Gender, stud.Note]
-    return render_template('students.html', title='Ученики', all_students=res_dict)
+    if form.is_submitted():
+        place = form.place.data.lower()
+        if len(place) > 4:
+            place = place[0:-1]
+        school_id = form.school.data
+        gender = form.gender.data
+        class_1 = form.class_1.data
+        class_2 = form.class_2.data
+        data_begin = form.data_begin.data
+        data_end = form.data_end.data
+        direction_id = form.direction.data
+        employer_id = form.employer.data
+
+        for stud in db_sess.query(Students).all():
+            if (place and place not in stud.Place_of_residence.lower()) or (
+                    school_id != -1 and school_id != stud.School) or (gender != 'False' and gender != stud.Gender):
+                continue
+
+            if class_1 != -1 and (int(stud.Class) < class_1):
+                continue
+            if class_2 != -1 and (int(stud.Class) > class_2):
+                continue
+
+            date = stud.Date_of_birth
+            if data_begin and date < data_begin:
+                continue
+            if data_end and date > data_end:
+                continue
+
+            flag_d = False
+            flag_e = False
+            for stud_it_cube in db_sess.query(Studies_it_cube).filter(Studies_it_cube.Id_student == stud.id).all():
+                if (direction_id != -1) and (stud_it_cube.Direction == direction_id):
+                    flag_d = True
+                if (employer_id != -1) and (stud_it_cube.Id_employer == employer_id):
+                    flag_e = True
+                if flag_e and flag_d:
+                    break
+
+            if (not flag_d and direction_id != -1) or (not flag_e and employer_id != -1):
+                continue
+
+            school = db_sess.query(Schools).filter(Schools.id == stud.School).first().School
+            res_dict[stud.id] = [stud.FIO, stud.Date_of_birth, stud.Class, stud.Сertificate_DO, stud.Place_of_residence,
+                                 school, stud.Number_phone_student, stud.Number_phone_parent,
+                                 stud.Gender, stud.Note]
+    else:
+        for stud in db_sess.query(Students).all():
+            school = db_sess.query(Schools).filter(Schools.id == stud.School).first().School
+            res_dict[stud.id] = [stud.FIO, stud.Date_of_birth, stud.Class, stud.Сertificate_DO, stud.Place_of_residence,
+                                 school, stud.Number_phone_student, stud.Number_phone_parent,
+                                 stud.Gender, stud.Note]
+    mess = ''
+    if exp:
+        mess = 'Успешно экспортировано'
+    students_export_dict = res_dict
+    return render_template('students.html', title='Ученики', all_students=res_dict, message=mess, form=form)
 
 
 # Подробности об ученике
@@ -703,6 +740,7 @@ def students():
 def more_students(id):
     db_sess = db_session.create_session()
     stude = db_sess.query(Students).filter(Students.id == id).first()
+    school = db_sess.query(Schools).filter(Schools.id == stude.School).first().School
     studies_it_cub = db_sess.query(Studies_it_cube).filter(Studies_it_cube.Id_student == stude.id).all()
     all_studies_it_cube = []
     for stud in studies_it_cub:
@@ -710,7 +748,7 @@ def more_students(id):
         employer = db_sess.query(Employees).filter(Employees.id == stud.Id_employer).first()
         all_studies_it_cube.append([stud, direction, employer])
     return render_template('students_more.html', title='Подробности об ученике',
-                           student=stude, studies_it_cube=all_studies_it_cube)
+                           student=stude, studies_it_cube=all_studies_it_cube, school=school)
 
 
 # Редактирование учеников
@@ -727,14 +765,20 @@ def student(id):
             form.class_number.data = stud.Class
             form.certificate_do.data = stud.Сertificate_DO
             form.place_of_residence.data = stud.Place_of_residence
-            form.school.data = stud.School
+            schools = [0]
+            for school in db_sess.query(Schools).all():
+                if school.id == stud.School:
+                    schools[0] = [school.id, school.School]
+                else:
+                    schools.append([school.id, school.School])
+            form.school.choices = schools
             form.number_phone.data = stud.Number_phone_student
             form.number_phone_parent.data = stud.Number_phone_parent
             form.gender.data = stud.Gender
             form.note.data = stud.Note
         else:
             abort(404)
-    if form.validate_on_submit():
+    if form.is_submitted():
         db_sess = db_session.create_session()
         stud = db_sess.query(Students).filter(Students.id == id).first()
         if stud:
@@ -762,6 +806,7 @@ def student(id):
 @login_required
 def add_student():
     form = AddStudents()
+    update_student(form.school)
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         new_student = Students(
@@ -856,9 +901,9 @@ def studies_it_cube(id):
 
 
 # Показ сотрудников
-@app.route('/employees')
+@app.route('/employees/<int:exp>')
 @login_required
-def employees():
+def employees(exp):
     db_sess = db_session.create_session()
     res_dict = {}
     for num, empl in enumerate(db_sess.query(Employees).all()):
@@ -866,8 +911,125 @@ def employees():
         res_dict[num + 1] = [empl.FIO, empl.Email, empl.Hashed_password, empl.Date_of_birth,
                              empl.Place_of_residence, empl.Number_phone, empl.Gender, status.Role,
                              empl.Note]
+    mess = ''
+    if exp:
+        mess = 'Успешно экспортировано'
     return render_template('employees.html', title='Сотрудники',
-                           all_employees=res_dict)
+                           all_employees=res_dict, message=mess)
+
+
+# Дополнительные, незначительные вещи, которые можно добавить
+@app.route('/additionally')
+@login_required
+def additionally():
+    db_sess = db_session.create_session()
+    dirs = db_sess.query(Directions).all()
+    achievs = db_sess.query(Achievement).all()
+
+    lens = {len(dirs): dirs, len(achievs): achievs}
+    max_len = max([i for i in lens.keys()])
+    for i in lens.items():
+        for j in range(max_len - i[0]):
+            i[1].append('')
+
+    form_of_hold = db_sess.query(Form_of_Holding).all()
+    statuses = db_sess.query(Status).all()
+
+    lens = {len(form_of_hold): form_of_hold, len(statuses): statuses}
+    max_len = max([i for i in lens.keys()])
+    for i in lens.items():
+        for j in range(max_len - i[0]):
+            i[1].append('')
+
+    schools = db_sess.query(Schools).all()
+
+    return render_template('additionally.html', title='Дополнительно', directions=dirs, achievements=achievs,
+                           forms_hold=form_of_hold, statuses=statuses, schools=schools)
+
+
+# Добавление нового направления
+@app.route('/add_direction', methods=['GET', 'POST'])
+@login_required
+def add_direction():
+    form = AddDirection()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        direction = Directions(
+            Direction=form.direction.data
+        )
+        db_sess.add(direction)
+        db_sess.commit()
+        return redirect(f'/additionally')
+    return render_template('add_direction.html', title='Добавление направления',
+                           form=form)
+
+
+# Добавление нового вида достижения
+@app.route('/add_achievement', methods=['GET', 'POST'])
+@login_required
+def add_achievement():
+    form = AddAchievement()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        achievement = Achievement(
+            Achievement=form.name_of_achievement.data
+        )
+        db_sess.add(achievement)
+        db_sess.commit()
+        return redirect('/additionally')
+    return render_template('add_achievement.html', title='Добавление достижения',
+                           form=form)
+
+
+# Форма добавления формы проведения
+@app.route('/add_form_of_holding', methods=['GET', 'POST'])
+@login_required
+def add_form_of_holding():
+    form = AddFormOfHolding()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        form_of_hold = Form_of_Holding(
+            Form=form.form_of_hold.data
+        )
+        db_sess.add(form_of_hold)
+        db_sess.commit()
+        return redirect(f'/additionally')
+    return render_template('add_form_of_holding.html', title='Добавление формы проведения',
+                           form=form)
+
+
+# Форма добавления формы проведения
+@app.route('/add_status', methods=['GET', 'POST'])
+@login_required
+def add_status():
+    form = AddStatus()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        status = Status(
+            Status_name=form.status.data
+        )
+        db_sess.add(status)
+        db_sess.commit()
+        return redirect(f'/additionally')
+    return render_template('add_status.html', title='Добавление статуса',
+                           form=form)
+
+
+# Форма добавления школы
+@app.route('/add_school', methods=['GET', 'POST'])
+@login_required
+def add_school():
+    form = AddSchool()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        school = Schools(
+            School=form.school.data
+        )
+        db_sess.add(school)
+        db_sess.commit()
+        return redirect(f'/additionally')
+    return render_template('add_school.html', title='Добавление школы',
+                           form=form)
 
 
 # Отображение фото
@@ -896,7 +1058,6 @@ def add_photo(id_event, id_result):
     if form.is_submitted():
         f = request.files['achievement_photo']
         blob_data = download_photo(f)
-        print(blob_data)
         res.Diploms = blob_data
         db_sess.commit()
         return redirect(f'/results/{id_event}')
@@ -970,13 +1131,9 @@ def export_events():
         {col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8,
          col9: list9, col10: list10, col11: list11, col12: list12, col13: list13, col14: list14, col15: list15})
 
-    num = 0
-    while True:
-        if not (os.path.exists(f'all_exports/events{num}.xlsx')):
-            data.to_excel(f'all_exports/events{num}.xlsx', sheet_name='sheet1', index=False)
-            return redirect('events')
-        else:
-            num += 1
+    now_date = datetime.datetime.now().strftime('%d_%m_%Y_%H_%M')
+    data.to_excel(f'../all_exports/events{now_date}.xlsx', sheet_name='sheet1', index=False)
+    return redirect('events/1')
 
 
 @app.route('/export_students')
@@ -1005,32 +1162,27 @@ def export_students():
     col10 = "Пол"
     col11 = "Примечание"
 
-    db_sess = db_session.create_session()
-
-    for num, stud in enumerate(db_sess.query(Students).all()):
+    for num, stud in enumerate(students_export_dict):
+        stud = students_export_dict[stud]
         list1.append(num + 1)
-        list2.append(stud.FIO)
-        list3.append(stud.Date_of_birth)
-        list4.append(stud.Class)
-        list5.append(stud.Сertificate_DO)
-        list6.append(stud.Place_of_residence)
-        list7.append(stud.School)
-        list8.append(stud.Number_phone_student)
-        list9.append(stud.Number_phone_parent)
-        list10.append(stud.Gender)
-        list11.append(stud.Note)
+        list2.append(stud[0])
+        list3.append(stud[1])
+        list4.append(stud[2])
+        list5.append(stud[3])
+        list6.append(stud[4])
+        list7.append(stud[5])
+        list8.append(stud[6])
+        list9.append(stud[7])
+        list10.append(stud[8])
+        list11.append(stud[9])
 
     data = pd.DataFrame(
         {col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8,
          col9: list9, col10: list10, col11: list11})
 
-    num = 0
-    while True:
-        if not (os.path.exists(f'all_exports/students{num}.xlsx')):
-            data.to_excel(f'all_exports/students{num}.xlsx', sheet_name='sheet1', index=False)
-            return redirect('students')
-        else:
-            num += 1
+    now_date = datetime.datetime.now().strftime('%d_%m_%Y_%H_%M')
+    data.to_excel(f'../all_exports/students{now_date}.xlsx', sheet_name='sheet1', index=False)
+    return redirect('students/1')
 
 
 @app.route('/export_employees')
@@ -1069,17 +1221,14 @@ def export_employees():
     data = pd.DataFrame(
         {col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8})
 
-    num = 0
-    while True:
-        if not (os.path.exists(f'all_exports/employees{num}.xlsx')):
-            data.to_excel(f'all_exports/employees{num}.xlsx', sheet_name='sheet1', index=False)
-            return redirect('employees')
-        else:
-            num += 1
+    now_date = datetime.datetime.now().strftime('%d_%m_%Y_%H_%M')
+    data.to_excel(f'../all_exports/employees{now_date}.xlsx', sheet_name='sheet1', index=False)
+    return redirect('employees/1')
 
 
 @app.route('/export_reports')
 def export_reports():
+    global reports_export_dict
     list1 = []
     list2 = []
     list3 = []
@@ -1100,50 +1249,24 @@ def export_reports():
     col8 = "Дата"
     col9 = "Результат"
 
-    db_sess = db_session.create_session()
-    for num, res in enumerate(db_sess.query(Results).all()):
-        student_info = db_sess.query(Studies_it_cube).filter(Studies_it_cube.Id_student == res.Id_student).first()
-        stud = db_sess.query(Students).filter(Students.id == student_info.Id_student).first().FIO
-
-        employeer = db_sess.query(Employees).filter(Employees.id == res.Id_employer).first().FIO
-
-        id_st_event = db_sess.query(Stages_Events).filter(Stages_Events.id == res.Id_stage_event).first()
-        ev_ = db_sess.query(Event).filter(Event.id == id_st_event.Id_event).first()
-        ev = ev_.Name_of_event
-
-        direction = db_sess.query(Directions).filter(Directions.id == ev_.Direction).first().Direction
-
-        stage_ = db_sess.query(Stages).filter(Stages.id == id_st_event.Id_stage).first()
-        dat = stage_.Date_end
-        stag = stage_.Stage
-
-        status_id = ev_.Status
-        status = db_sess.query(Status).filter(Status.id == status_id).first().Status_name
-
-        achiev = db_sess.query(Achievement).filter(Achievement.id == res.Id_achievement).first().Achievement
-
+    for num, res_id in enumerate(reports_export_dict):
         list1.append(num + 1)
-        list2.append(stud)
-        list3.append(employeer)
-        list4.append(direction)
-        list5.append(ev)
-        list6.append(stag)
-        list7.append(status)
-        list8.append(dat)
-        list9.append(achiev)
+        list2.append(reports_export_dict[res_id][0])
+        list3.append(reports_export_dict[res_id][1])
+        list4.append(reports_export_dict[res_id][2])
+        list5.append(reports_export_dict[res_id][3])
+        list6.append(reports_export_dict[res_id][4])
+        list7.append(reports_export_dict[res_id][5])
+        list8.append(reports_export_dict[res_id][6])
+        list9.append(reports_export_dict[res_id][7])
 
-    print(list6)
-    print(list8)
     data = pd.DataFrame(
         {col1: list1, col2: list2, col3: list3, col4: list4, col5: list5, col6: list6, col7: list7, col8: list8,
          col9: list9})
-    num = 0
-    while True:
-        if not (os.path.exists(f'all_exports/reports{num}.xlsx')):
-            data.to_excel(f'all_exports/reports{num}.xlsx', sheet_name='sheet1', index=False)
-            return redirect('/reports')
-        else:
-            num += 1
+
+    now_date = datetime.datetime.now().strftime('%d_%m_%Y_%H_%M')
+    data.to_excel(f'../all_exports/reports{now_date}.xlsx', sheet_name='sheet1', index=False)
+    return redirect('/reports/1')
 
 
 def main():

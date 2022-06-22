@@ -93,7 +93,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-9 col-md-8 col-sm-6">
+        <div class="col-12">
             {{ form.Direction.label }}<br>
             {{ form.Direction(class="form-control") }}<br>
             {% for error in form.Direction.errors %}
@@ -101,10 +101,6 @@
                     {{ error }}
                 </p>
                 {% endfor %}
-        </div>
-        <div class="col-lg-3 col-md-4 col-sm-6">
-            <br>
-            <a class="btn btn-secondary btn-input btn-sm" href="/add_direction/event/0">Добавить новое направление</a>
         </div>
     </div>
     <div class="row">

@@ -31,12 +31,12 @@ quare_achievement = f"""
 def update_reports(student, employer, direction, event, status, achievement):
     con = sqlite3.connect('./db/it-cube-data.db')
     cur = con.cursor()
-    results_student = [(-1, ''), *cur.execute(quare_student).fetchall()]
-    results_employer = [(-1, ''), *cur.execute(quare_employer).fetchall()]
-    results_direct = [(-1, ''), *cur.execute(quare_direct).fetchall()]
-    results_event = [(-1, ''), *cur.execute(quare_event).fetchall()]
-    results_status = [(-1, ''), *cur.execute(quare_status).fetchall()]
-    results_achievement = [(-1, ''), *cur.execute(quare_achievement).fetchall()]
+    results_student = [(-1, ''), *sorted(cur.execute(quare_student).fetchall(), key=lambda n: n[1])]
+    results_employer = [(-1, ''), *sorted(cur.execute(quare_employer).fetchall(), key=lambda n: n[1])]
+    results_direct = [(-1, ''), *sorted(cur.execute(quare_direct).fetchall(), key=lambda n: n[1])]
+    results_event = [(-1, ''), *sorted(cur.execute(quare_event).fetchall(), key=lambda n: n[1])]
+    results_status = [(-1, ''), *sorted(cur.execute(quare_status).fetchall(), key=lambda n: n[1])]
+    results_achievement = [(-1, ''), *sorted(cur.execute(quare_achievement).fetchall(), key=lambda n: n[1])]
 
     student.choices = [(student[0], student[1]) for student in results_student]
     employer.choices = [(employer[0], employer[1]) for employer in results_employer]

@@ -6,6 +6,12 @@ from sqlalchemy_serializer import SerializerMixin
 from .db_session import SqlAlchemyBase
 
 
+class Schools(SqlAlchemyBase, UserMixin, SerializerMixin):
+    __tablename__ = 'Schools'
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
+    School = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+
+
 class Studies_it_cube(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'Studies_it_cube'
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
@@ -29,7 +35,7 @@ class Students(SqlAlchemyBase, UserMixin, SerializerMixin):
     Class = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     Сertificate_DO = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     Place_of_residence = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    School = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    School = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("Schools.id"), nullable=True)
     Number_phone_student = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Number_phone_parent = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     Gender = sqlalchemy.Column(sqlalchemy.String, nullable=True)
